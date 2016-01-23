@@ -1,15 +1,6 @@
 from Tkinter import *
 import calendar
-
-class Day:
-	dayOfWeek = "null"
-	schoolDay = "null"
-
-class Teacher:
-	name = "null"
-	grade = "null"
-	freeHours = "null"
-	recessHours = "null"
+import Classes
 
 def sampleCalculation():
 	#Pull in Start date
@@ -29,9 +20,21 @@ def sampleCalculation():
 	for num in range(0,numT):
 		if len(teacherListTemp[num]) > 0:
 			teacherList.append(teacherListTemp[num])
-
-	
-
+			
+			
+			
+			
+	##TODO
+	#	Generate all weeks
+	#	Week class contain day 'opbects'. Each day will need a value of if it is a day in which school is held. (default = yes)
+	#	( Seperate these weeks into the 2 seperate simester lists || Add simester as a value inside of Week class )	
+	#
+	#	(Do needs between simesters change?)
+	#
+	#  	Calucate week configuration(s) for a given week of school
+	#	( Calc week as normal and ignore "off days"  || Rebalance work load )
+	#
+	#	
 
 
 	#TEST OUPUT
