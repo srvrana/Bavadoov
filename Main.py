@@ -1,4 +1,5 @@
 from Tkinter import *
+from tkMessageBox import *
 import calendar
 import Classes
 
@@ -38,9 +39,12 @@ def sampleCalculation():
 
 
 	#TEST OUPUT
-	print "Schedualing from ", startMonth, "/", startDay, "/", startYear, " to ", endMonth, "/", endDay, "/", endYear, "..."
+	print "Scheduling from ", startMonth, "/", startDay, "/", startYear, " to ", endMonth, "/", endDay, "/", endYear, "..."
 	for teacher in teacherList:
 		print teacher
+
+	output = "Scheduling " + startMonth + "/" + startDay + "/" + startYear + " - " + endMonth + "/" + endDay + "/" + endYear + "..."
+	showinfo("Working...", output)
 	
 	
 
@@ -82,7 +86,7 @@ Label(master, text="Number of Teachers: ").grid(row=2)
 nT.grid(row=2, column=1)
 Label(master, text="Teacher 1: ").grid(row=3)
 t1.grid(row=3, column=1)
-Label(master, text="Teahcer 2: ").grid(row=4)
+Label(master, text="Teacher 2: ").grid(row=4)
 t2.grid(row=4, column=1)
 
 #Submit button
