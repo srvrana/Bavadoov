@@ -55,7 +55,7 @@ def testXLSOut():
 	dataInputSheet.write(1,0,'is')
 	dataInputSheet.write(2,0,'user')
 	dataInputSheet.write(3,0,'input')
-	
+	#Style sheet for schedual
 	style = xlwt.easyxf('font: bold 1, color red')
 	schedualSheet.write(0,0,'Today', style);
 	schedualSheet.write(0,1,'We', style);
