@@ -61,7 +61,7 @@ def testXLSOut():
 	schedualSheet.write(0,1,'We', style);
 	schedualSheet.write(0,2,'Teach', style);
 	
-	workbook.save("Testoutput.xls")
+	workbook.save("Output/Testoutput.xls")
 	
 	print("safed to Testoutput.xls")
 	

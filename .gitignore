@@ -1,4 +1,5 @@
 pyInstaller/
 build/
 dist/
+Output/
 *.spec
