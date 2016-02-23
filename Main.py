@@ -2,6 +2,7 @@ from Tkinter import *
 from tkMessageBox import *
 import calendar
 import Classes
+import xlwt
 
 def sampleCalculation():
 	#Pull in Start date
@@ -39,15 +40,32 @@ def sampleCalculation():
 
 
 	#TEST OUPUT
-	print "Scheduling from ", startMonth, "/", startDay, "/", startYear, " to ", endMonth, "/", endDay, "/", endYear, "..."
-	for teacher in teacherList:
-		print teacher
+
 
 	output = "Scheduling " + startMonth + "/" + startDay + "/" + startYear + " - " + endMonth + "/" + endDay + "/" + endYear + "..."
 	showinfo("Working...", output)
 	
+	testXLSOut()
 	
-
+def testXLSOut():
+	workbook = xlwt.Workbook()
+	dataInputSheet = workbook.add_sheet("User Input")
+	schedualSheet = workbook.add_sheet("Schedual")
+	dataInputSheet.write(0,0,'this') #Row, Col, Data
+	dataInputSheet.write(1,0,'is')
+	dataInputSheet.write(2,0,'user')
+	dataInputSheet.write(3,0,'input')
+	
+	style = xlwt.easyxf('font: bold 1, color red')
+	schedualSheet.write(0,0,'Today', style);
+	schedualSheet.write(0,1,'We', style);
+	schedualSheet.write(0,2,'Teach', style);
+	
+	workbook.save("Testoutput.xls")
+	
+	print("safed to Testoutput.xls")
+	
+	
 # Gui initilation
 master = Tk()
 
