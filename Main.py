@@ -1,24 +1,28 @@
 from Tkinter import *
 from tkMessageBox import *
 import tkSimpleDialog
-import calendar
+import tkFileDialog
 import Classes
 import xlwt
-import xlrd
 from xlrd import open_workbook
 
 """Global Variables"""
-SAVELOCATION = "Output/Schedule.xls"
+SAVELOCATION = ""
 ScheduleType = ""
 NumTeachers = 0
 Teachers = []
 BlockCount = 0
 BlockTimes = []
+BlockDoW = []
 LunchBlock = 0
+SubCount = 0
+Subjects = []
 """End Variables """
 
-#Testing github Branch
 
+"""
+	Test method
+"""
 def printTestOutput():
 	#Test print Data
 	print ScheduleType
@@ -28,19 +32,27 @@ def printTestOutput():
 		if x == LunchBlock-1:
 			print "LUNCH:"
 		print "Block " + str(x+1) + " : " + str(BlockTimes[x])
-
+		print "Structure = " + str(BlockDoW[x])
+	print "Subjects"
+	for x in Subjects:
+		print x
+"""
+	Put teacher names and block times into outputfile
+"""
 def frameSchedule(sheet):
 	style = xlwt.easyxf("font: bold 1")
 	#Fill times
 	for x in range(0,BlockCount):
 		if x == LunchBlock -1:
-			sheet.write(x+1,0, "Lunch: " + BlockTimes[x], style)
+			sheet.write(x+1,0, "Lunch: " + str(BlockTimes[x]), style)
 		else:
 			sheet.write(x+1,0, BlockTimes[x], style)
 	#Teacher labels
 	for x in range(0,NumTeachers):
 		sheet.write(0,x+1, Teachers[x].name, style)
-
+"""
+	Saves user input to the xls file
+"""
 def saveSettings(workbook):
 	dataInput = workbook.add_sheet("User Input")
 	dataInput.col(0).width = 256*25
@@ -52,6 +64,7 @@ def saveSettings(workbook):
 	dataInput.write(1,0,"Number Of Teachers:", style)
 	dataInput.write(2,0,"Number Of Blocks:", style)
 	dataInput.write(3,0,"Lunch Block:", style)
+	dataInput.write(4,0,"Subject Count:", style)
 	dataInput.write(5,0,"Block Times:", style)
 	dataInput.write(0,3,"Teachers", style)
 	dataInput.write(1,3,"Name:", style)
@@ -59,12 +72,14 @@ def saveSettings(workbook):
 	dataInput.write(3,3,"Designation", style)
 	dataInput.write(4,3,"Start Time", style)
 	dataInput.write(5,3,"End Time", style)
+	dataInput.write(7,3,"Subjects", style)
 
 	#Add Static Data
 	dataInput.write(0,1,ScheduleType)
 	dataInput.write(1,1,NumTeachers)
 	dataInput.write(2,1,BlockCount)
 	dataInput.write(3,1,LunchBlock)
+	dataInput.write(4,1,SubCount)
 
 	#Add Teachers
 	for x in range(0,NumTeachers):
@@ -78,41 +93,71 @@ def saveSettings(workbook):
 	for x in range(0,BlockCount):
 		dataInput.write(x+6,0,"Block "+ str(x+1))
 		dataInput.write(x+6,1,BlockTimes[x])
+		dataInput.write(x+6,2,BlockDoW[x])
 
-
-
+	#Add Subjects
+	for x in range(0,SubCount):
+		dataInput.write(x+7,4,Subjects[x])
+"""
+	Main Generation Method
+"""
 def Generate():
 	printTestOutput()
 	workbook = xlwt.Workbook()
 	scheduleSheet = workbook.add_sheet("Schedule")
 	frameSchedule(scheduleSheet)
 	"""Hard stuff goes here"""
-
 	#Add settings
 	saveSettings(workbook)
 	workbook.save(SAVELOCATION)
 	print "Saved to " + SAVELOCATION
 
 
+def getSubjects():
+	def addSubject():
+		for x in range(0,SubCount):
+			Subjects.append(Subs[x].get())
+		slave3.destroy()
+		master.destroy()
+		Generate()
+	"""End Sub"""
 
+	global SubCount
+	global Subjects
+	Subs = []
 
+	SubCount = tkSimpleDialog.askinteger("Sub", "How Many Subjects do we Have?")
+	slave3 = Tk()
+	Label(slave3,text="Subjects:").grid(row=0, column=0)
+	for x in range(0,SubCount):
+		Subs.append(Entry(slave3))
+		Subs[x].grid(row=x+1, column=0)
+	sub = Button(slave3, text="Submit", command=addSubject)
+	sub.grid(row=SubCount+1, column=1)
+
+"""
+	Gets number of blocks in a day, which block is lunch, and dynamically asked for times for each block
+"""
 def getBlocks():
+
 	"""
 	Sub Command - Stores info brought in from tkinter GUI
 	"""
 	def addBlock():
 		for x in range(0,BlockCount):
 			BlockTimes.append(Times[x].get())
-		master.destroy()
+			BlockDoW.append(DayStructure[x].get())
+
 		slave2.destroy()
-		Generate()
+		getSubjects()
 
 	"""End Sub"""
 
 	global BlockCount
 	global LunchBlock
+	global BlockDoW
 	Times = []
-
+	DayStructure = []
 	BlockCount = tkSimpleDialog.askinteger("bCount", "How Many Blocks in a day?")
 	LunchBlock = tkSimpleDialog.askinteger("lunch", "Which block is lunch?")
 	while LunchBlock > BlockCount-1:
@@ -125,6 +170,10 @@ def getBlocks():
 		Label(slave2,text="Block " + str(x+1) +" Time: ").grid(row=x, column=0)
 		Times.append(Entry(slave2))
 		Times[x].grid(row=x, column=1)
+		Label(slave2,text="Structure (Separate with /):").grid(row=x, column=2)
+		DayStructure.append(Entry(slave2))
+		DayStructure[x].grid(row=x, column=3)
+
 	sub = Button(slave2, text="Submit", command=addBlock)
 	sub.grid(row=BlockCount+1, column=1)
 
@@ -191,7 +240,6 @@ def getTeachers():
 	Label(slave, text ="End Time").grid(row=5, column=0)
 	End.append(Entry(slave))
 	End[0].grid(row=5,column=1)
-
 	# For all Teachers, from 1 to Number of Teachers
 	for x in range(1,NumTeachers):
 		Teachers.append(Classes.Teacher())
@@ -203,7 +251,6 @@ def getTeachers():
 		Label(slave, text ="Type").grid(row=x*6+2, column=0)
 		Types.append(Entry(slave))
 		Types[x].grid(row=x*6+2,column=1)
-
 		#Desig
 		Label(slave, text ="Designation").grid(row=x*6+3, column=0)
 		Designations.append(Entry(slave))
@@ -223,10 +270,14 @@ def getTeachers():
 	sub = Button(slave, text="Submit", command=addTeacher)
 	sub.grid(row=NumTeachers*10, column=1)
 
-
-
 	slave.mainloop()
 
+
+def saveLocation():
+	global SAVELOCATION
+	SAVELOCATION = str(tkFileDialog.askdirectory()) + "/"
+	SAVELOCATION += (tkSimpleDialog.askstring("file", "Name of saved file"))
+	SAVELOCATION += ".xls"
 """
 	Sets Schedual Type to "Early" (childhood)
 	Calls getTeachers
@@ -234,6 +285,7 @@ def getTeachers():
 def setEarly():
 	global ScheduleType
 	ScheduleType = "Early Development"
+	saveLocation()
 	getTeachers()
 
 """
@@ -243,6 +295,7 @@ def setEarly():
 def setGrade():
 	global ScheduleType
 	ScheduleType = "Grade"
+	saveLocation()
 	getTeachers()
 
 """
@@ -255,16 +308,20 @@ def impSchedual():
 	global BlockCount
 	global BlockTimes
 	global LunchBlock
+	global SubCount
+	filename = tkFileDialog.askopenfilename(parent=master,title='Chose file to open')
 
-	book = open_workbook(SAVELOCATION)
+	book = open_workbook(filename)
 	sheet = book.sheet_by_name("User Input")
 	ScheduleType = sheet.cell(0,1).value
 	NumTeachers = int(sheet.cell(1,1).value)
 	BlockCount = int(sheet.cell(2,1).value)
 	LunchBlock = int(sheet.cell(3,1).value)
+	SubCount = int(sheet.cell(4,1).value)
 
 	for x in range(0, BlockCount):
 		BlockTimes.append(int(sheet.cell(x+6,1).value))
+		BlockDoW.append(str(sheet.cell(x+6,2).value))
 
 	for x in range(0, NumTeachers):
 		Teachers.append(Classes.Teacher())
@@ -274,19 +331,25 @@ def impSchedual():
 		Teachers[x].startTime = int(sheet.cell(4,x+4).value)
 		Teachers[x].endTime = int(sheet.cell(5,x+4).value)
 
-	printTestOutput()
-	getTeachers()
+	for x in range(0, SubCount):
+		Subjects.append(sheet.cell(x+7,4).value)
+
+	saveLocation()
+	Generate()
 
 """
 	MAIN METHOD STARTS HERE
 	Button selection will set Schedual type to a string
 """
 master = Tk()
+master.minsize(width=250, height=220)
 early = Button (master, text="Early Development", command=setEarly)
 grade = Button (master, text="Grade School", command=setGrade)
 imp = Button(master, text="Import from Exsisting", command=impSchedual)
-early.grid(row=0, column=0)
-grade.grid(row=1, column=0)
-imp.grid(row=2, column = 0)
+early.grid(row=0, column=0, ipady = 15, ipadx=75)
+grade.grid(row=1, column=0, ipady = 15, ipadx=89)
+imp.grid(row=2, column = 0, ipady = 15, ipadx=68)
 
 master.mainloop()
+
+

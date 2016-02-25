@@ -9,4 +9,11 @@ class Teacher:
 
 class Block:
 	Time = ""
+	DayLayout =""
+	#Will be an array of days
+	Parts = []
+
+class Days:
+	#Day of week
+	DoW = ""
 	Subject = ""
