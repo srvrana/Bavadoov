@@ -5,15 +5,16 @@ import calendar
 import Classes
 import xlwt
 import xlrd
+from xlrd import open_workbook
+
 """Global Variables"""
+SAVELOCATION = "Output/Schedule.xls"
 ScheduleType = ""
 NumTeachers = 0
 Teachers = []
 BlockCount = 0
 BlockTimes = []
 LunchBlock = 0
-
-
 """End Variables """
 
 def printTestOutput():
@@ -24,7 +25,19 @@ def printTestOutput():
 	for x in range(0,BlockCount):
 		if x == LunchBlock-1:
 			print "LUNCH:"
-		print "Block " + str(x+1) + " : " + BlockTimes[x]
+		print "Block " + str(x+1) + " : " + str(BlockTimes[x])
+
+def frameSchedule(sheet):
+	style = xlwt.easyxf("font: bold 1")
+	#Fill times
+	for x in range(0,BlockCount):
+		if x == LunchBlock -1:
+			sheet.write(x+1,0, "Lunch: " + BlockTimes[x], style)
+		else:
+			sheet.write(x+1,0, BlockTimes[x], style)
+	#Teacher labels
+	for x in range(0,NumTeachers):
+		sheet.write(0,x+1, Teachers[x].name, style)
 
 def saveSettings(workbook):
 	dataInput = workbook.add_sheet("User Input")
@@ -70,13 +83,13 @@ def Generate():
 	printTestOutput()
 	workbook = xlwt.Workbook()
 	scheduleSheet = workbook.add_sheet("Schedule")
-
+	frameSchedule(scheduleSheet)
 	"""Hard stuff goes here"""
 
 	#Add settings
 	saveSettings(workbook)
-	workbook.save("Output/Testoutput.xls")
-	print "Saved to Output/Testoutput.xls"
+	workbook.save(SAVELOCATION)
+	print "Saved to " + SAVELOCATION
 
 
 
@@ -113,9 +126,6 @@ def getBlocks():
 	sub = Button(slave2, text="Submit", command=addBlock)
 	sub.grid(row=BlockCount+1, column=1)
 
-
-
-
 """
 	Gets us the Number of teachers and their info
 	Calls Get Blocks
@@ -123,7 +133,7 @@ def getBlocks():
 def getTeachers():
 	"""
 	Sub Command - Stores info brought in from tkinter GUI
-	This info is in the Array of Teacher classes named Teachers
+	This info is in the Array of 'Teacher classes' named Teachers
 	"""
 	def addTeacher():
 		for x in range(0,NumTeachers):
@@ -237,7 +247,33 @@ def setGrade():
 	Import form a exsisting schedual
 """
 def impSchedual():
-	print("Yet to be implemented")
+	global ScheduleType
+	global NumTeachers
+	global Teachers
+	global BlockCount
+	global BlockTimes
+	global LunchBlock
+
+	book = open_workbook(SAVELOCATION)
+	sheet = book.sheet_by_name("User Input")
+	ScheduleType = sheet.cell(0,1).value
+	NumTeachers = int(sheet.cell(1,1).value)
+	BlockCount = int(sheet.cell(2,1).value)
+	LunchBlock = int(sheet.cell(3,1).value)
+
+	for x in range(0, BlockCount):
+		BlockTimes.append(int(sheet.cell(x+6,1).value))
+
+	for x in range(0, NumTeachers):
+		Teachers.append(Classes.Teacher())
+		Teachers[x].name = sheet.cell(1,x+4).value
+		Teachers[x].type = sheet.cell(2,x+4).value
+		Teachers[x].designation = sheet.cell(3,x+4).value
+		Teachers[x].startTime = int(sheet.cell(4,x+4).value)
+		Teachers[x].endTime = int(sheet.cell(5,x+4).value)
+
+	printTestOutput()
+	getTeachers()
 
 """
 	MAIN METHOD STARTS HERE
