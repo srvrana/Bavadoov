@@ -215,7 +215,7 @@ def getTeachers():
 	#Append a teacher class to end of Teachers[]
 	Teachers.append(Classes.Teacher())
 	#Populate Teacher 1
-	Label(slave, text ="Teacher 1").grid(row=0, column=0, columnspan=2)
+	'''Label(slave, text ="Teacher 1").grid(row=0, column=0, columnspan=2)
 	#Names
 	Label(slave, text ="Name").grid(row=1, column=0)
 	Names.append(Entry(slave))
@@ -239,31 +239,56 @@ def getTeachers():
 	#End
 	Label(slave, text ="End Time").grid(row=5, column=0)
 	End.append(Entry(slave))
-	End[0].grid(row=5,column=1)
+	End[0].grid(row=5,column=1)'''
 	# For all Teachers, from 1 to Number of Teachers
-	for x in range(1,NumTeachers):
+	for x in range(0,NumTeachers):
+		tempEnd = ""
+		tempStart = ""
+		tempDesig = ""
+		tempType = ""
+		tempName = ""
 		Teachers.append(Classes.Teacher())
 		Label(slave, text ="Teacher " + str(x+1)).grid(row=x*6, column=0, columnspan=2, pady=5)
 		Label(slave, text ="Name").grid(row=x*6+1, column=0)
-		Names.append(Entry(slave))
+		if(x < len(Teachers)):
+			tempName = Teachers[x].name
+		tempEntry = Entry(slave)
+		tempEntry.insert(0, tempName)
+		Names.append(tempEntry)
 		Names[x].grid(row=x*6+1,column=1)
 		#Type
 		Label(slave, text ="Type").grid(row=x*6+2, column=0)
-		Types.append(Entry(slave))
+		if(x < len(Teachers)):
+			tempType = Teachers[x].type
+		tempEntry = Entry(slave)
+		tempEntry.insert(0, tempType)
+		Types.append(tempEntry)
 		Types[x].grid(row=x*6+2,column=1)
 		#Desig
 		Label(slave, text ="Designation").grid(row=x*6+3, column=0)
-		Designations.append(Entry(slave))
+		if(x < len(Teachers)):
+			tempDesig = Teachers[x].designation
+		tempEntry = Entry(slave)
+		tempEntry.insert(0, tempDesig)
+		Designations.append(tempEntry)
 		Designations[x].grid(row=x*6+3,column=1)
 
 		#Start
 		Label(slave, text ="Start Time").grid(row=x*6+4, column=0)
-		Start.append(Entry(slave))
+		if(x < len(Teachers)):
+			tempStart = Teachers[x].startTime
+		tempEntry = Entry(slave)
+		tempEntry.insert(0, tempStart)
+		Start.append(tempEntry)
 		Start[x].grid(row=x*6+4,column=1)
 
 		#End
 		Label(slave, text ="End Time").grid(row=x*6+5, column=0)
-		End.append(Entry(slave))
+		if(x < len(Teachers)):
+			tempEnd = Teachers[x].endTime
+		tempEntry = Entry(slave)
+		tempEntry.insert(0, tempEnd)
+		End.append(tempEntry)
 		End[x].grid(row=x*6+5,column=1)
 	#End for loop
 
@@ -299,7 +324,7 @@ def setGrade():
 	getTeachers()
 
 """
-	Import form a exsisting schedual
+	Import from an existing schedule
 """
 def impSchedual():
 	global ScheduleType
@@ -335,6 +360,7 @@ def impSchedual():
 		Subjects.append(sheet.cell(x+7,4).value)
 
 	saveLocation()
+	getTeachers()
 	Generate()
 
 """
@@ -345,7 +371,7 @@ master = Tk()
 master.minsize(width=250, height=220)
 early = Button (master, text="Early Development", command=setEarly)
 grade = Button (master, text="Grade School", command=setGrade)
-imp = Button(master, text="Import from Exsisting", command=impSchedual)
+imp = Button(master, text="Import from Existing", command=impSchedual)
 early.grid(row=0, column=0, ipady = 15, ipadx=75)
 grade.grid(row=1, column=0, ipady = 15, ipadx=89)
 imp.grid(row=2, column = 0, ipady = 15, ipadx=68)
