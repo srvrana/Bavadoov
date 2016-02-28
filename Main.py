@@ -9,13 +9,13 @@ from xlrd import open_workbook
 """Global Variables"""
 SAVELOCATION = ""
 ScheduleType = ""
-NumTeachers = 0
+NumTeachers = ""
 Teachers = []
-BlockCount = 0
+BlockCount = ""
 BlockTimes = []
 BlockDoW = []
-LunchBlock = 0
-SubCount = 0
+LunchBlock = ""
+SubCount = ""
 Subjects = []
 """End Variables """
 
@@ -25,6 +25,7 @@ Subjects = []
 """
 def printTestOutput():
 	#Test print Data
+	""" Input Test
 	print ScheduleType
 	for x in Teachers:
 		print x.name, x.type, x.designation, x.startTime,x.endTime
@@ -36,10 +37,20 @@ def printTestOutput():
 	print "Subjects"
 	for x in Subjects:
 		print x
+	"""
+
+	print "##################"
+	for t in Teachers:
+		print "Name: ", t.name
+		for b in t.schedule:
+			print "Block Time: ", b.time
+			for d in b.part:
+				print "Parced:", d.doW
+
 """
 	Put teacher names and block times into outputfile
 """
-def frameSchedule(sheet):
+def printSchedule(sheet):
 	style = xlwt.easyxf("font: bold 1")
 	#Fill times
 	for x in range(0,BlockCount):
@@ -47,9 +58,23 @@ def frameSchedule(sheet):
 			sheet.write(x+1,0, "Lunch: " + str(BlockTimes[x]), style)
 		else:
 			sheet.write(x+1,0, BlockTimes[x], style)
-	#Teacher labels
+	#Teacher
 	for x in range(0,NumTeachers):
+		#print Teachers[x].name
+		#Write name x
 		sheet.write(0,x+1, Teachers[x].name, style)
+		#Write Block y for Teacher X
+		for y in range(0,BlockCount):
+			#print "block ", (y+1)
+			tempString = ""
+			#build parts of day Z
+			for z in Teachers[x].schedule[y].part:
+				#print z.doW
+				tempString += str(z.doW + " : " + z.subject + "\n")
+				#print "$"
+
+			#print (tempString)
+			sheet.write(y+1,x+1, tempString)
 """
 	Saves user input to the xls file
 """
@@ -98,21 +123,68 @@ def saveSettings(workbook):
 	#Add Subjects
 	for x in range(0,SubCount):
 		dataInput.write(x+7,4,Subjects[x])
+
+"""
+	Creates Blocks in schedule[] in Teachers[]
+"""
+def ParseBlocks():
+
+	tempSchedule = []
+	#For Each block in the day
+	for x in range(0,BlockCount):
+		tempSchedule.append(Classes.Block())
+		tempSchedule[x].time = BlockTimes[x]
+
+		#Get days of week's as entrys in a list
+		tempString = BlockDoW[x].split("/")
+
+		#Test print
+		print "Block = ", x+1
+		print "Should be ",tempString
+
+		#For each doW
+		for y in tempString:
+			tempSchedule[x].part.append(Classes.Day())
+			tempSchedule[x].part[-1].doW = y
+
+		#Test print
+		print "Is: "
+		for z in tempSchedule[x].part:
+			print z.doW
+		print""
+
+
+
+	#Test print
+	print "TEST"
+	for x in tempSchedule:
+		print "Block start ", x.time
+		for y in x.part:
+			print y.doW
+
+
+	#Assign to all teachers
+	for teacher in Teachers:
+		teacher.schedule = tempSchedule
 """
 	Main Generation Method
 """
 def Generate():
-	printTestOutput()
+	"""Hard stuff goes here"""
+	ParseBlocks()
+	#printTestOutput()
+
+	"""Save Book"""
 	workbook = xlwt.Workbook()
 	scheduleSheet = workbook.add_sheet("Schedule")
-	frameSchedule(scheduleSheet)
-	"""Hard stuff goes here"""
-	#Add settings
-	saveSettings(workbook)
+	printSchedule(scheduleSheet)
+	#saveSettings(workbook)
 	workbook.save(SAVELOCATION)
 	print "Saved to " + SAVELOCATION
 
-
+"""
+	Gui to get Number of Subjects, and what they are
+"""
 def getSubjects():
 	def addSubject():
 		for x in range(0,SubCount):
