@@ -52,6 +52,8 @@ def printTestOutput():
 """
 def printSchedule(sheet):
 	style = xlwt.easyxf("font: bold 1")
+	style2 = xlwt.XFStyle()
+	style2.alignment.wrap = 1
 	#Fill times
 	for x in range(0,BlockCount):
 		if x == LunchBlock -1:
@@ -60,21 +62,17 @@ def printSchedule(sheet):
 			sheet.write(x+1,0, BlockTimes[x], style)
 	#Teacher
 	for x in range(0,NumTeachers):
-		#print Teachers[x].name
 		#Write name x
 		sheet.write(0,x+1, Teachers[x].name, style)
 		#Write Block y for Teacher X
 		for y in range(0,BlockCount):
-			#print "block ", (y+1)
 			tempString = ""
 			#build parts of day Z
 			for z in Teachers[x].schedule[y].part:
-				#print z.doW
-				tempString += str(z.doW + " : " + z.subject + "\n")
-				#print "$"
+				tempString += str(z.doW + "  :  " + z.subject + "\n")
 
 			#print (tempString)
-			sheet.write(y+1,x+1, tempString)
+			sheet.write(y+1,x+1, tempString, style2)
 """
 	Saves user input to the xls file
 """
@@ -129,41 +127,20 @@ def saveSettings(workbook):
 """
 def ParseBlocks():
 
-	tempSchedule = []
+	tempSchedule = [ Classes.Block() for i in range(BlockCount)]
+
 	#For Each block in the day
 	for x in range(0,BlockCount):
-		tempSchedule.append(Classes.Block())
 		tempSchedule[x].time = BlockTimes[x]
 
 		#Get days of week's as entrys in a list
 		tempString = BlockDoW[x].split("/")
-
-		#Test print
-		print "Block = ", x+1
-		print "Should be ",tempString
+		tempSchedule[x].part = [Classes.Day() for i in range(len(tempString))]
 
 		#For each doW
-		for y in tempString:
-			tempSchedule[x].part.append(Classes.Day())
-			tempSchedule[x].part[-1].doW = y
+		for y in range(0,len(tempString)):
+			tempSchedule[x].part[y].doW = tempString[y]
 
-		#Test print
-		print "Is: "
-		for z in tempSchedule[x].part:
-			print z.doW
-		print""
-
-
-
-	#Test print
-	print "TEST"
-	for x in tempSchedule:
-		print "Block start ", x.time
-		for y in x.part:
-			print y.doW
-
-
-	#Assign to all teachers
 	for teacher in Teachers:
 		teacher.schedule = tempSchedule
 """
@@ -178,7 +155,7 @@ def Generate():
 	workbook = xlwt.Workbook()
 	scheduleSheet = workbook.add_sheet("Schedule")
 	printSchedule(scheduleSheet)
-	#saveSettings(workbook)
+	saveSettings(workbook)
 	workbook.save(SAVELOCATION)
 	print "Saved to " + SAVELOCATION
 
