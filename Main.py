@@ -48,7 +48,7 @@ def printTestOutput():
 				print "Parced:", d.doW
 
 """
-	Put teacher names and block times into outputfile
+	Populate Schedule sheet of XLS
 """
 def printSchedule(sheet):
 	style = xlwt.easyxf("font: bold 1")
@@ -164,6 +164,8 @@ def Generate():
 """
 def getSubjects():
 	def addSubject():
+		global Subjects
+		Subjects = []
 		for x in range(0,SubCount):
 			Subjects.append(Subs[x].get())
 		slave3.destroy()
@@ -175,12 +177,20 @@ def getSubjects():
 	global Subjects
 	Subs = []
 
-	SubCount = tkSimpleDialog.askinteger("Sub", "How Many Subjects do we Have?")
+	SubCount = tkSimpleDialog.askinteger("Sub", "How Many Subjects do we Have?", initialvalue= SubCount)
+
+	#pad Subject[] for prepop and adding subjects
+	while len(Subjects) < SubCount:
+		Subjects.append("")
+
 	slave3 = Tk()
 	Label(slave3,text="Subjects:").grid(row=0, column=0)
 	for x in range(0,SubCount):
-		Subs.append(Entry(slave3))
+		prepop = Entry(slave3)
+		prepop.insert(0, Subjects[x])
+		Subs.append(prepop)
 		Subs[x].grid(row=x+1, column=0)
+
 	sub = Button(slave3, text="Submit", command=addSubject)
 	sub.grid(row=SubCount+1, column=1)
 
@@ -193,6 +203,10 @@ def getBlocks():
 	Sub Command - Stores info brought in from tkinter GUI
 	"""
 	def addBlock():
+		global BlockTimes
+		global BlockDoW
+		BlockTimes = []
+		BlockDoW = []
 		for x in range(0,BlockCount):
 			BlockTimes.append(Times[x].get())
 			BlockDoW.append(DayStructure[x].get())
@@ -207,20 +221,31 @@ def getBlocks():
 	global BlockDoW
 	Times = []
 	DayStructure = []
-	BlockCount = tkSimpleDialog.askinteger("bCount", "How Many Blocks in a day?")
-	LunchBlock = tkSimpleDialog.askinteger("lunch", "Which block is lunch?")
+	BlockCount = tkSimpleDialog.askinteger("bCount", "How Many Blocks in a day?", initialvalue=BlockCount)
+	LunchBlock = tkSimpleDialog.askinteger("lunch", "Which block is lunch?", initialvalue=LunchBlock)
 	while LunchBlock > BlockCount-1:
 		showinfo("Error", "Lunch must be Less than Blocks in a day - 1")
 		LunchBlock = tkSimpleDialog.askinteger("lunch", "Which block is lunch?")
+
+	#Pad BlockTimes / BlockDoW for prepop if less than block cound
+	while len(BlockTimes) < BlockCount:
+		BlockTimes.append("")
+		BlockDoW.append("")
 
 	#Get block Times, slave2 = new window
 	slave2 = Tk()
 	for x in range(0,BlockCount):
 		Label(slave2,text="Block " + str(x+1) +" Time: ").grid(row=x, column=0)
-		Times.append(Entry(slave2))
+		prepop = Entry(slave2)
+		prepop.insert(0, BlockTimes[x])
+		Times.append(prepop)
 		Times[x].grid(row=x, column=1)
+
+
 		Label(slave2,text="Structure (Separate with /):").grid(row=x, column=2)
-		DayStructure.append(Entry(slave2))
+		prepop = Entry(slave2)
+		prepop.insert(0, BlockDoW[x])
+		DayStructure.append(prepop)
 		DayStructure[x].grid(row=x, column=3)
 
 	sub = Button(slave2, text="Submit", command=addBlock)
@@ -236,7 +261,11 @@ def getTeachers():
 	This info is in the Array of 'Teacher classes' named Teachers
 	"""
 	def addTeacher():
+		global Teachers
+		#Clear array to account for shrink after import
+		Teachers = []
 		for x in range(0,NumTeachers):
+			Teachers.append(Classes.Teacher())
 			Teachers[x].name = Names[x].get()
 			Teachers[x].type = Types[x].get()
 			Teachers[x].designation = Designations[x].get()
@@ -257,62 +286,51 @@ def getTeachers():
 	End = []
 
 	#Get Number of Teachers, stored globaly
-	NumTeachers = tkSimpleDialog.askinteger("NumTeachers", "How Many Teachers?")
+	NumTeachers = tkSimpleDialog.askinteger("NumTeachers", "How Many Teachers?", initialvalue=NumTeachers)
 
 	#New GUI Window
 	slave = Tk()
-	#Append a teacher class to end of Teachers[]
-	Teachers.append(Classes.Teacher())
-	#Populate Teacher 1
-	Label(slave, text ="Teacher 1").grid(row=0, column=0, columnspan=2)
-	#Names
-	Label(slave, text ="Name").grid(row=1, column=0)
-	Names.append(Entry(slave))
-	Names[0].grid(row=1,column=1)
 
-	#Type
-	Label(slave, text ="Type").grid(row=2, column=0)
-	Types.append(Entry(slave))
-	Types[0].grid(row=2,column=1)
-
-	#Desig
-	Label(slave, text ="Designation").grid(row=3, column=0)
-	Designations.append(Entry(slave))
-	Designations[0].grid(row=3,column=1)
-
-	#Start
-	Label(slave, text ="Start Time").grid(row=4, column=0)
-	Start.append(Entry(slave))
-	Start[0].grid(row=4,column=1)
-
-	#End
-	Label(slave, text ="End Time").grid(row=5, column=0)
-	End.append(Entry(slave))
-	End[0].grid(row=5,column=1)
-	# For all Teachers, from 1 to Number of Teachers
-	for x in range(1,NumTeachers):
+	#Pad Teachers array for prepopulation where we add teachers
+	while len(Teachers) < NumTeachers:
 		Teachers.append(Classes.Teacher())
+
+	# For all Teachers, from 0 to Number of Teachers
+	for x in range(0,NumTeachers):
+
 		Label(slave, text ="Teacher " + str(x+1)).grid(row=x*6, column=0, columnspan=2, pady=5)
 		Label(slave, text ="Name").grid(row=x*6+1, column=0)
-		Names.append(Entry(slave))
+		prepop = Entry(slave)
+		prepop.insert(0, Teachers[x].name)
+		Names.append(prepop)
 		Names[x].grid(row=x*6+1,column=1)
+
 		#Type
 		Label(slave, text ="Type").grid(row=x*6+2, column=0)
-		Types.append(Entry(slave))
+		prepop = Entry(slave)
+		prepop.insert(0, Teachers[x].type)
+		Types.append(prepop)
 		Types[x].grid(row=x*6+2,column=1)
+
 		#Desig
 		Label(slave, text ="Designation").grid(row=x*6+3, column=0)
-		Designations.append(Entry(slave))
+		prepop = Entry(slave)
+		prepop.insert(0, Teachers[x].designation)
+		Designations.append(prepop)
 		Designations[x].grid(row=x*6+3,column=1)
 
 		#Start
 		Label(slave, text ="Start Time").grid(row=x*6+4, column=0)
-		Start.append(Entry(slave))
+		prepop = Entry(slave)
+		prepop.insert(0, Teachers[x].startTime)
+		Start.append(prepop)
 		Start[x].grid(row=x*6+4,column=1)
 
 		#End
 		Label(slave, text ="End Time").grid(row=x*6+5, column=0)
-		End.append(Entry(slave))
+		prepop = Entry(slave)
+		prepop.insert(0, Teachers[x].endTime)
+		End.append(prepop)
 		End[x].grid(row=x*6+5,column=1)
 	#End for loop
 
@@ -321,7 +339,9 @@ def getTeachers():
 
 	slave.mainloop()
 
-
+"""
+	Get save location
+"""
 def saveLocation():
 	global SAVELOCATION
 	SAVELOCATION = str(tkFileDialog.askdirectory()) + "/"
@@ -384,7 +404,7 @@ def impSchedual():
 		Subjects.append(sheet.cell(x+7,4).value)
 
 	saveLocation()
-	Generate()
+	getTeachers()
 
 """
 	MAIN METHOD STARTS HERE
