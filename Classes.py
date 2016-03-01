@@ -8,12 +8,11 @@ class Teacher:
 	schedule = []
 
 class Block:
-	Time = ""
-	DayLayout =""
+	time = ""
 	#Will be an array of days
-	Parts = []
+	part = []
 
-class Days:
+class Day:
 	#Day of week
-	DoW = ""
-	Subject = ""
+	doW = ""
+	subject = ""
