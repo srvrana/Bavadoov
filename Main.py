@@ -2,7 +2,8 @@ from Tkinter import *
 from tkMessageBox import *
 import tkSimpleDialog
 import tkFileDialog
-import Classes
+#import Classes
+from Classes import *
 import xlwt
 from xlrd import open_workbook
 
@@ -127,7 +128,7 @@ def saveSettings(workbook):
 """
 def ParseBlocks():
 
-	tempSchedule = [ Classes.Block() for i in range(BlockCount)]
+	tempSchedule = [ Block() for i in range(BlockCount)]
 
 	#For Each block in the day
 	for x in range(0,BlockCount):
@@ -135,7 +136,7 @@ def ParseBlocks():
 
 		#Get days of week's as entrys in a list
 		tempString = BlockDoW[x].split("/")
-		tempSchedule[x].part = [Classes.Day() for i in range(len(tempString))]
+		tempSchedule[x].part = [Day() for i in range(len(tempString))]
 
 		#For each doW
 		for y in range(0,len(tempString)):
@@ -265,7 +266,7 @@ def getTeachers():
 		#Clear array to account for shrink after import
 		Teachers = []
 		for x in range(0,NumTeachers):
-			Teachers.append(Classes.Teacher())
+			Teachers.append(Teacher())
 			Teachers[x].name = Names[x].get()
 			Teachers[x].type = Types[x].get()
 			Teachers[x].designation = Designations[x].get()
@@ -293,7 +294,7 @@ def getTeachers():
 
 	#Pad Teachers array for prepopulation where we add teachers
 	while len(Teachers) < NumTeachers:
-		Teachers.append(Classes.Teacher())
+		Teachers.append(Teacher())
 
 	# For all Teachers, from 0 to Number of Teachers
 	for x in range(0,NumTeachers):
@@ -393,7 +394,7 @@ def impSchedual():
 		BlockDoW.append(str(sheet.cell(x+6,2).value))
 
 	for x in range(0, NumTeachers):
-		Teachers.append(Classes.Teacher())
+		Teachers.append(Teacher())
 		Teachers[x].name = sheet.cell(1,x+4).value
 		Teachers[x].type = sheet.cell(2,x+4).value
 		Teachers[x].designation = sheet.cell(3,x+4).value

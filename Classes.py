@@ -1,12 +1,3 @@
-class Teacher:
-	name = ""
-	type = ""
-	designation = ""
-	startTime = ""
-	endTime = ""
-	#Will be array of blocks
-	schedule = []
-
 class Block:
 	time = ""
 	#Will be an array of days
@@ -16,3 +7,16 @@ class Day:
 	#Day of week
 	doW = ""
 	subject = ""
+
+class Subject:
+    def __init__(self,name,grade):
+        self.name=name
+        self.grade=grade
+        self.period = 0
+
+
+class Teacher:
+    def __init__(self,name,aval):
+        self.name = name
+        self.aval = aval
+        self.subjectList = []
