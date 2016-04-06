@@ -266,7 +266,7 @@ def getTeachers():
 		#Clear array to account for shrink after import
 		Teachers = []
 		for x in range(0,NumTeachers):
-			Teachers.append(Teacher())
+			Teachers.append(Teacher("",""))
 			Teachers[x].name = Names[x].get()
 			Teachers[x].type = Types[x].get()
 			Teachers[x].designation = Designations[x].get()
@@ -294,7 +294,7 @@ def getTeachers():
 
 	#Pad Teachers array for prepopulation where we add teachers
 	while len(Teachers) < NumTeachers:
-		Teachers.append(Teacher())
+		Teachers.append(Teacher("",""))
 
 	# For all Teachers, from 0 to Number of Teachers
 	for x in range(0,NumTeachers):
@@ -394,7 +394,7 @@ def impSchedual():
 		BlockDoW.append(str(sheet.cell(x+6,2).value))
 
 	for x in range(0, NumTeachers):
-		Teachers.append(Teacher())
+		Teachers.append(Teacher("",""))
 		Teachers[x].name = sheet.cell(1,x+4).value
 		Teachers[x].type = sheet.cell(2,x+4).value
 		Teachers[x].designation = sheet.cell(3,x+4).value

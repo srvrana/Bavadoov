@@ -1,18 +1,17 @@
 class Block:
 	time = ""
-	#Will be an array of days
 	part = []
 
 class Day:
-	#Day of week
 	doW = ""
 	subject = ""
 
 class Subject:
-    def __init__(self,name,grade):
+    def __init__(self,name,grade, mathClass ):
         self.name=name
         self.grade=grade
         self.period = 0
+        self.mathClass = mathClass
 
 
 class Teacher:
@@ -20,3 +19,7 @@ class Teacher:
         self.name = name
         self.aval = aval
         self.subjectList = []
+        self.type = ""
+        self.designation = ""
+        self.startTime = ""
+        self.endTime = ""
