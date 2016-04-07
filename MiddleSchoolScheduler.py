@@ -1,4 +1,5 @@
 from constraint import *
+from copy import deepcopy
 
 def schedule (teacherList):
     mathSetList = solveMath(teacherList)
@@ -12,8 +13,11 @@ def schedule (teacherList):
         #pass list with set math to solve
         #This method returns a list of finished teacherlists, unlike mathsolve
         #print len(mathSetList)
-        return  solve(teacherList)
-       # for solution in solutions:
+        solutions = solve(teacherList)
+        return solutions
+        #for solution in solutions:
+        #    return solution
+            #exit()
             #Method call here.
             #We will pass solution, save to excel, ask if okay. if okay returns true and exit
         #    if(Main.happyWith(solution)):
@@ -55,35 +59,46 @@ def solve(teacherList):
                 for l in range(j, len(teacherList[i].subjectList)):
                     if j != l:
                         for z in range(0,len(teacherList[i].subjectList[l].grade)):
+                            #print teacherList[i].subjectList[l].grade[z][0]
                             #If the grade is differnet and name is the same
-                            if not any( grade[0] in teacherList[i].subjectList[l].grade[z] for grade in teacherList[i].subjectList[j].grade) and teacherList[i].subjectList[j].name == teacherList[i].subjectList[l].name :
+                            if not any( grade[0] in teacherList[i].subjectList[l].grade[z][0] for grade in teacherList[i].subjectList[j].grade) and teacherList[i].subjectList[j].name == teacherList[i].subjectList[l].name :
                                 #print "TeacherList["+str(i)+"].subjectList["+str(j)+"].period", " != " "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"
+                                #print teacherList[i].subjectList[j].name, " != ", teacherList[i].subjectList[l].name
+                                #print teacherList[i].subjectList[j].grade, " != ", teacherList[i].subjectList[l].grade
+
+
                                 problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
                                 break
 
 
-                for k in range(i, len(teacherList)):
-                    for p in range(j, len(teacherList[k].subjectList)):
-                        if not teacherList[k].subjectList[p].mathClass:
-                            for z in range(0,len(teacherList[i].subjectList[l].grade)):
-                                if any( grade[0] in teacherList[i].subjectList[l].grade[z] for grade in teacherList[i].subjectList[j].grade) and teacherList[i].subjectList[j].name != teacherList[i].subjectList[l].name :
-                                    foo = "bar"
-                                    #print "TeacherList["+str(i)+"].subjectList["+str(j)+"].period", " != ", "TeacherList["+str(k)+"].subjectList["+str(p)+"].period"
-                                    problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
-                                                   ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(k)+"].subjectList["+str(p)+"].period"))
+                for k in range(0, len(teacherList)):
+                    for p in range(0, len(teacherList[k].subjectList)):
+                        if any( grade in teacherList[i].subjectList[j].grade for grade in teacherList[k].subjectList[p].grade) and teacherList[i].subjectList[j].name != teacherList[k].subjectList[p].name :
+                            #print "TeacherList["+str(i)+"].subjectList["+str(j)+"].period", " != ", "TeacherList["+str(k)+"].subjectList["+str(p)+"].period"
+                            problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
+                                            ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(k)+"].subjectList["+str(p)+"].period"))
 
     print ("solving.....")
-    solutions = problem.getSolution()
-    print ("done!")
+    solutions = problem.getSolutions()
+    print ("Done!")
     if not bool(solutions):
         print "No solution found"
         exit()
-    for i in range(0, len(teacherList)):
-        for j in range(0, len(teacherList[i].subjectList)):
-            teacherList[i].subjectList[j].period = solutions.get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
-    teacherList = compress (teacherList)
-    return teacherList
+
+    print ("compressing...")
+    finalList= []
+    for x in range(0,len(solutions)):
+        tempList = deepcopy(teacherList)
+        for i in range(0, len(teacherList)):
+            for j in range(0, len(tempList[i].subjectList)):
+                tempList[i].subjectList[j].period = solutions[x].get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
+
+        tempList = compress (tempList)
+        finalList.append(tempList)
+    print ("Done!")
+
+    return finalList
 
 def compress (teacherList):
     for i in range(0,len(teacherList)):
@@ -95,12 +110,22 @@ def compress (teacherList):
                     if teacherList[i].subjectList[j].period == teacherList[i].subjectList[k].period:
                         if teacherList[i].subjectList[j].name == teacherList[i].subjectList[k].name:
                             if teacherList[i].subjectList[j].grade[0][0] == teacherList[i].subjectList[k].grade[0][0]:
-                                teacherList[i].subjectList[j].grade.append(teacherList[i].subjectList[k].grade[0])
                                 #print "compressing"
                                 #print teacherList[i].subjectList[j].name, " == ", teacherList[i].subjectList[k].name
                                 #print teacherList[i].subjectList[j].period, " == ", teacherList[i].subjectList[k].period
-                                #print teacherList[i].subjectList[j].grade[0], " == ", teacherList[i].subjectList[k].grade[0]
+                                #print teacherList[i].subjectList[j].grade, " == ", teacherList[i].subjectList[k].grade
 
+                                teacherList[i].subjectList[j].grade.append(teacherList[i].subjectList[k].grade[0])
+                                #print "becomes"
+                                #print teacherList[i].subjectList[j].name
+                                #print teacherList[i].subjectList[j].period
+                                #print teacherList[i].subjectList[j].grade
+
+                                #print "removing"
+                                #print teacherList[i].subjectList[k].name
+                                #print teacherList[i].subjectList[k].period
+                                #print teacherList[i].subjectList[k].grade
+                                #print "\n"
                                 del teacherList[i].subjectList[k]
                                 return compress(teacherList)
 
