@@ -190,6 +190,8 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
     while not happy:
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet("Schedule")
+        for i in range(0,5):
+            sheet.col(i).width = 256*30
         #Default info inlcuding audit and homeroom
         fillDefault(sheet, auditable,homerooms )
         #Fill with generated
@@ -231,8 +233,17 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
         sheet.write(6,4,tueThur[1],styleCenter)
         sheet.write(9,4,tueThur[2],styleCenter)
 
-        sheetTwo = workbook.add_sheet("Schedule")
-        printFriday(sheetTwo)
+        sheetTwo = workbook.add_sheet("Friday")
+        printFriday(sheetTwo,currentSchedual,auditable,homerooms)
+        for i in range(0,2):
+            sheetTwo.col(i).width = 256*30
+
+        sheetThree = workbook.add_sheet("Rotation")
+        printRotations(sheetThree,currentSchedual)
+        for i in range(0,5):
+            sheetThree.col(i).width = 256*30
+
+
 
         workbook.save(saveLocation)
         print "Saved to " + saveLocation
@@ -295,3 +306,85 @@ def fillDefault (sheet,auditable,homerooms ):
     for i in range(1,5):
         content = "Study Hall: " + auditable[i%2][4] + "\n" +"Project Room: ", auditable[i%2][5]
         sheet.write(11,i,content,styleCenter)
+
+def printFriday(sheet, currentSchedual,auditable, homerooms):
+    styleBold = xlwt.easyxf("font: bold 1; alignment: horizontal center")
+    styleBold.alignment.wrap = 1
+    styleCenter = xlwt.easyxf("alignment: horizontal center")
+    styleCenter.alignment.wrap = 1
+    styleNewLine = xlwt.easyxf()
+    styleNewLine.alignment.wrap = 1
+
+    friday = ["","","","","",""]
+    #generate period lists
+    for teacher in currentSchedual:
+        for subject in teacher.subjectList:
+            friday[subject.period-1] += (str(subject.grade) + " : " + subject.name + "\n")
+
+
+    sheet.write(0,0,"Period",styleBold)
+    sheet.write(0,1,"Friday",styleBold)
+    #before care
+    sheet.write(1,0,"8:00 - 8:20",styleBold)
+    content = auditable[-1][0] + " / " + auditable[-1][1]
+    sheet.write(1,1,"Before Care:\n\n" + content,styleCenter)
+    #homeroom
+    sheet.write(2,0,"8:30 - 8:35\n\nHomeroom",styleBold)
+    content = ""
+    for teacher in homerooms:
+        content +=  teacher.grade + ": " + teacher.name + "\n"
+    sheet.write(2,1,content,styleCenter)
+    #P1
+    sheet.write(3,0,"8:35 - 9:15\n\n1",styleBold)
+    sheet.write(3,1,friday[0],styleCenter)
+    #P2
+    sheet.write(4,0,"9:15 - 9:55\n\n2",styleBold)
+    sheet.write(4,1,friday[1],styleCenter)
+    #Braek
+    sheet.write(5,0,"9:55 - 10:00",styleBold)
+    sheet.write(5,1, "Morning Break",styleBold)
+    #P3
+    sheet.write(6,0,"10:00 - 10:40\n\n3",styleBold)
+    sheet.write(6,1,friday[2],styleCenter)
+    #P4
+    sheet.write(7,0,"10:40 - 11:20\n\n4",styleBold)
+    sheet.write(7,1,friday[3],styleCenter)
+    #Rotation
+    sheet.write(8,0,"11:20 - 12:05",styleBold)
+    sheet.write(8,1,"Quarterly Rotation",styleBold)
+
+    #Lunch
+    sheet.write(9,0,"Lunch: 12:50 - 1:30\n\nRecess: 12:25 - 12:50",styleBold)
+    content = auditable[-1][2] + " , " + auditable[-1][3]
+    sheet.write(9,1,"Lunch: " + content,styleBold)
+    #P5
+    sheet.write(10,0,"12:50 - 1:30\n\n5",styleBold)
+    sheet.write(10,1,friday[4],styleCenter)
+    #P6
+    sheet.write(11,0,"1:30 - 2:10\n\n6",styleBold)
+    sheet.write(11,1,friday[5],styleCenter)
+    #Break
+    sheet.write(12,0,"2:10 - 2:15",styleBold)
+    sheet.write(12,1,"Afternoon Break",styleBold)
+    #End of day
+    sheet.write(13,0,"2:15 - 3:00",styleBold)
+    content = "Study Hall: " + auditable[-1][4] + "\nGuided Study: " + auditable[-1][5]
+    sheet.write(13,1,content,styleBold)
+
+def printRotations(sheet,currentSchedual):
+    styleBold = xlwt.easyxf("font: bold 1")
+    allowNewLine = xlwt.XFStyle()
+    allowNewLine.alignment.wrap = 1
+    styleCenter = xlwt.easyxf("alignment: horizontal center")
+    styleCenter.alignment.wrap = 1
+
+    sheet.write(0,0,"Class Rotations",styleBold)
+    sheet.write(1,0,"6A",styleBold)
+    sheet.write(2,0,"6B",styleBold)
+    sheet.write(3,0,"7A",styleBold)
+    sheet.write(4,0,"7B",styleBold)
+    sheet.write(5,0,"8A",styleBold)
+    sheet.write(6,0,"8B",styleBold)
+
+
+
