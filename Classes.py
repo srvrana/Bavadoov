@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 class Block:
 	time = ""
 	part = []
@@ -38,6 +37,3 @@ class Teacher:
 	# for middle school 1,2,3 are only options
 	avail = []
 	subjects = []
-
-
->>>>>>> master
