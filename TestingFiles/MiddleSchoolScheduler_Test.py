@@ -39,10 +39,20 @@ Scott.subjectList.append(Subject("Sci", ["7B"], False))
 Scott.subjectList.append(Subject("Sci", ["8B"], False))
 Scott.subjectList.append(Subject("Sci", ["8A"], False))
 
-teacherList = [Cooper, Rae, Salazar, Scott]
-start = timeit.default_timer()
-listOfSolutions = schedule(teacherList)
+teacherList = [Salazar, Cooper, Rae, Scott]
 
+print "Starting..."
+start = timeit.default_timer()
+
+#set bool to False to produce testfile.xml output file.
+# if bool = False uncomment the exit statment below
+
+#True + remove lower exit()  = what we'll use for actual testing script.
+listOfSolutions = schedule(teacherList, "Testfile.xls", True)
+
+"""
+"""
+#exit()
 
 print len(listOfSolutions), " found.\nTesting for conflict..."
 
@@ -70,23 +80,5 @@ for teacherList in listOfSolutions:
                             exit()
 
 stop = timeit.default_timer()
-print "No conflict.. man Spencer's Handsome.."
+print "No conflict!"
 print "RunTime: ",stop - start
-    #for i in range(0, len(teacherList)):
-        #print "________"
-        #print teacherList[i].name
-        #print "--------"
-        #for j in range(0, len(teacherList[i].subjectList)):
-            #print "Period: ", teacherList[i].subjectList[j].period, teacherList[i].subjectList[j].name, teacherList[i].subjectList[j].grade
-
-    #for grade in range(6,9):
-        #for block in ["A","B"]:
-            #currentGrade = str(grade)+block
-            #print"_________"
-            #print "Grade: ", currentGrade
-            #print"---------"
-            #for i in range(0, len(teacherList)):
-                #for j in range(0, len(teacherList[i].subjectList)):
-                    #if currentGrade in teacherList[i].subjectList[j].grade:
-                        #print  teacherList[i].subjectList[j].period, "\t", teacherList[i].subjectList[j].name
-
