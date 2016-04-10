@@ -1,6 +1,7 @@
 from constraint import *
 from copy import deepcopy
 import xlwt
+from collections import defaultdict
 
 """
     Main Method To be called
@@ -176,7 +177,7 @@ def scheduleAuditable (teacherList):
     return assignments
 
 """
-    Prints 5 schedules at a time to an excel file
+    Prints schedules to an excel file
 """
 def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
 
@@ -204,17 +205,17 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
         for teacher in currentSchedual:
             for subject in teacher.subjectList:
                 if subject.period ==1:
-                    monWed[0] += str(subject.grade) + ": " + subject.name + "\n"
+                    monWed[0] += str(subject.grade) + ": " + subject.name + "\n\n"
                 elif subject.period ==2:
-                    monWed[1] += str(subject.grade) + ": " + subject.name + "\n"
+                    monWed[1] += str(subject.grade) + ": " + subject.name + "\n\n"
                 elif subject.period ==3:
-                    monWed[2] += str(subject.grade) + ": " + subject.name + "\n"
+                    monWed[2] += str(subject.grade) + ": " + subject.name + "\n\n"
                 elif subject.period ==4:
-                    tueThur[0] += str(subject.grade) + ": " + subject.name + "\n"
+                    tueThur[0] += str(subject.grade) + ": " + subject.name + "\n\n"
                 elif subject.period ==5:
-                    tueThur[1] += str(subject.grade) + ": " + subject.name + "\n"
+                    tueThur[1] += str(subject.grade) + ": " + subject.name + "\n\n"
                 elif subject.period ==6:
-                    tueThur[2] += str(subject.grade) + ": " + subject.name + "\n"
+                    tueThur[2] += str(subject.grade) + ": " + subject.name + "\n\n"
 
 
         sheet.write(4,1,monWed[0],styleCenter)
@@ -251,6 +252,9 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
         #happy = isUserHappy()
         happy = True
 
+"""
+    Fills in everything except class'
+"""
 def fillDefault (sheet,auditable,homerooms ):
     styleBold = xlwt.easyxf("font: bold 1; alignment: horizontal center")
     styleBold.alignment.wrap = 1
@@ -307,6 +311,9 @@ def fillDefault (sheet,auditable,homerooms ):
         content = "Study Hall: " + auditable[i%2][4] + "\n" +"Project Room: ", auditable[i%2][5]
         sheet.write(11,i,content,styleCenter)
 
+"""
+    prints sheet for friday schedule
+"""
 def printFriday(sheet, currentSchedual,auditable, homerooms):
     styleBold = xlwt.easyxf("font: bold 1; alignment: horizontal center")
     styleBold.alignment.wrap = 1
@@ -371,6 +378,29 @@ def printFriday(sheet, currentSchedual,auditable, homerooms):
     content = "Study Hall: " + auditable[-1][4] + "\nGuided Study: " + auditable[-1][5]
     sheet.write(13,1,content,styleBold)
 
+"""
+    Generates quartery rotation, returns as dictionary
+"""
+def generateRotation (currentSchedual):
+    gradeList = defaultdict(list)
+    for teacher in currentSchedual:
+        for subject in teacher.subjectList:
+            for grade in subject.grade:
+                if grade in gradeList.keys():
+                    gradeList[grade].append(subject)
+                else:
+                    gradeList[str(grade)] =[subject]
+    for key in gradeList.keys():
+        tempList = gradeList[key]
+        tempList.sort(key = lambda x: x.period)
+        for i in range(0,len(tempList)):
+            tempList[i] = tempList[i].name
+        gradeList[key] = tempList
+    return gradeList
+
+"""
+    prints sheet for Quarterly rotations
+"""
 def printRotations(sheet,currentSchedual):
     styleBold = xlwt.easyxf("font: bold 1")
     allowNewLine = xlwt.XFStyle()
@@ -378,13 +408,32 @@ def printRotations(sheet,currentSchedual):
     styleCenter = xlwt.easyxf("alignment: horizontal center")
     styleCenter.alignment.wrap = 1
 
+    gradeList = generateRotation(currentSchedual)
+
     sheet.write(0,0,"Class Rotations",styleBold)
-    sheet.write(1,0,"6A",styleBold)
-    sheet.write(2,0,"6B",styleBold)
-    sheet.write(3,0,"7A",styleBold)
-    sheet.write(4,0,"7B",styleBold)
-    sheet.write(5,0,"8A",styleBold)
-    sheet.write(6,0,"8B",styleBold)
 
+    keys = gradeList.keys()
+    keys.sort()
+    i = 1
+    for key in keys:
+        sheet.write(i,0,key,styleBold)
+        if i < 5:
+            #Boy i'm lazy
+            sheet.write(0,i,"Quarter: " + str(i),styleBold)
 
+        classList = gradeList[key]
+        x = len(classList)
+        y = x/2
+        mw = ""
+        tth =""
+        for j in range(0,len(classList)):
+            if j <= y:
+                mw += (classList[j] + "\n")
+            else:
+                tth += (classList[j] + "\n")
 
+        sheet.write(i,1,mw)
+        sheet.write(i,2,tth)
+        sheet.write(i,3,mw)
+        sheet.write(i,4,tth)
+        i += 1
