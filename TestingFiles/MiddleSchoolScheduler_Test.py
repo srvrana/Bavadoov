@@ -3,45 +3,110 @@ from Classes import*
 import timeit
 
 
-Cooper =  Teacher("Cooper",[1,2,3,4,5])
+Cooper =  Teacher()
+Cooper.name = "Cooper"
 Cooper.homeRoom = "6"
-Cooper.subjectList.append(Subject("Math 4 Alg B", ["8B"], True))
-Cooper.subjectList.append(Subject("Math 4 Alg A", ["7B","8A"], True))
-Cooper.subjectList.append(Subject("Math 3", ["6B","7A"], True))
-Cooper.subjectList.append(Subject("Math 2", ["6A"], True))
+Cooper.aval = [1,2,3,4,5]
+Cooper.subjectList.append(Subject())
+Cooper.subjectList[-1].name = "Math 4 Alg B"
+Cooper.subjectList[-1].grade = ["8B"]
+
+Cooper.subjectList.append(Subject())
+Cooper.subjectList[-1].name = "Math 4 Alg A"
+Cooper.subjectList[-1].grade = ["7B","8A"]
+
+Cooper.subjectList.append(Subject())
+Cooper.subjectList[-1].name = "Math 3"
+Cooper.subjectList[-1].grade = ["6B","7A"]
+
+Cooper.subjectList.append(Subject())
+Cooper.subjectList[-1].name = "Math 2"
+Cooper.subjectList[-1].grade = ["6A"]
+
+for subject in Cooper.subjectList:
+    subject.mathClass = True
 
 
-Rae = Teacher("Rae", [1,2,3,4])
+Rae = Teacher()
+Rae.name = "Rae"
+Rae.aval = [1,2,3,4]
 Rae.homeRoom = "7"
-Rae.subjectList.append(Subject("Spanish", ["6A"], False))
-Rae.subjectList.append(Subject("Spanish", ["6B"], False))
-Rae.subjectList.append(Subject("Spanish", ["8B"], False))
-Rae.subjectList.append(Subject("Spanish", ["8A"], False))
-Rae.subjectList.append(Subject("Spanish", ["7B"], False))
-Rae.subjectList.append(Subject("Spanish", ["7A"], False))
+Rae.subjectList.append(Subject())
+Rae.subjectList[-1].grade =["6A"]
+
+Rae.subjectList.append(Subject())
+Rae.subjectList[-1].grade =["6B"]
+
+Rae.subjectList.append(Subject())
+Rae.subjectList[-1].grade =["8B"]
+
+Rae.subjectList.append(Subject())
+Rae.subjectList[-1].grade =["8A"]
+
+Rae.subjectList.append(Subject())
+Rae.subjectList[-1].grade =["7B"]
+
+Rae.subjectList.append(Subject())
+Rae.subjectList[-1].grade =["7A"]
+
+for subject in Rae.subjectList:
+    subject.name = "Spanish"
 
 
-Salazar = Teacher("Salazar", [1,2,3,4])
+Salazar = Teacher()
+Salazar.name = "Salazar"
+Salazar.aval = [1,2,3,4]
 Salazar.homeRoom = "8A"
-Salazar.subjectList.append(Subject("SS", ["6B"], False))
-Salazar.subjectList.append(Subject("SS", ["6A"], False))
-Salazar.subjectList.append(Subject("SS", ["7B"], False))
-Salazar.subjectList.append(Subject("SS", ["7A"], False))
-Salazar.subjectList.append(Subject("SS", ["8A"], False))
-Salazar.subjectList.append(Subject("SS", ["8B"], False))
+Salazar.subjectList.append(Subject())
+Salazar.subjectList[-1].grade=["6B"]
 
-Scott = Teacher("Scott", [1,2,3,4])
+Salazar.subjectList.append(Subject())
+Salazar.subjectList[-1].grade=["6A"]
+
+Salazar.subjectList.append(Subject())
+Salazar.subjectList[-1].grade=["7B"]
+
+Salazar.subjectList.append(Subject())
+Salazar.subjectList[-1].grade=["7A"]
+
+Salazar.subjectList.append(Subject())
+Salazar.subjectList[-1].grade=["8A"]
+
+Salazar.subjectList.append(Subject())
+Salazar.subjectList[-1].grade=["8B"]
+
+for subject in Salazar.subjectList:
+    subject.name = "SS"
+
+
+Scott = Teacher()
+Scott.name = "Scott"
+Scott.aval = [1,2,3,4]
 Scott.homeRoom = "8B"
-Scott.subjectList.append(Subject("Sci", ["6B"], False))
-Scott.subjectList.append(Subject("Sci", ["6A"], False))
-Scott.subjectList.append(Subject("Sci", ["7A"], False))
-Scott.subjectList.append(Subject("Sci", ["7B"], False))
-Scott.subjectList.append(Subject("Sci", ["8B"], False))
-Scott.subjectList.append(Subject("Sci", ["8A"], False))
+Scott.subjectList.append(Subject())
+Scott.subjectList[-1].grade = ["6B"]
+
+Scott.subjectList.append(Subject())
+Scott.subjectList[-1].grade = ["6A"]
+
+Scott.subjectList.append(Subject())
+Scott.subjectList[-1].grade = ["7A"]
+
+Scott.subjectList.append(Subject())
+Scott.subjectList[-1].grade = ["7B"]
+
+Scott.subjectList.append(Subject())
+Scott.subjectList[-1].grade = ["8B"]
+
+Scott.subjectList.append(Subject())
+Scott.subjectList[-1].grade = ["8A"]
+
+for subject in Scott.subjectList:
+    subject.name = "Sci"
 
 teacherList = [Salazar, Cooper, Rae, Scott]
 
-print "Starting..."
+print "Starting Middle school test script..."
 start = timeit.default_timer()
 
 #set bool to False to produce testfile.xml output file.
@@ -50,11 +115,10 @@ start = timeit.default_timer()
 #True + remove lower exit()  = what we'll use for actual testing script.
 listOfSolutions = schedule(teacherList, "C:\Users\Spencer\Dropbox\Bavadoov\Output\TestingStuff.xls", True)
 
-"""
-"""
+
 #exit()
 
-print len(listOfSolutions), " found.\nTesting for conflict..."
+print len(listOfSolutions), " solutions found.\nTesting for conflict..."
 
 for teacherList in listOfSolutions:
     for i in range(0, len(teacherList)):
