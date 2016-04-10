@@ -7,17 +7,17 @@ class Day:
 	subject = ""
 
 class Subject:
-    def __init__(self,name,grade, mathClass ):
-        self.name=name
-        self.grade=grade # List of strings
+    def __init__(self):
+        self.name=""
+        self.grade=[] # List of strings
         self.period = 0
-        self.mathClass = mathClass
+        self.mathClass = False
 
 
 class Teacher:
-    def __init__(self,name,aval):
-        self.name = name
-        self.aval = aval #List of ints
+    def __init__(self):
+        self.name = ""
+        self.aval = [] #List of ints
         self.subjectList = []
         self.type = ""
         self.designation = ""
