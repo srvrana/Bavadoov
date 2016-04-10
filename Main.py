@@ -6,6 +6,7 @@ import tkFileDialog
 from Classes import *
 import xlwt
 from xlrd import open_workbook
+from MiddleSchool import *
 
 """Global Variables"""
 SAVELOCATION = ""
@@ -414,11 +415,13 @@ def impSchedual():
 master = Tk()
 master.minsize(width=250, height=220)
 early = Button (master, text="Early Development", command=setEarly)
+middle = Button (master, text="Middle School", command=setMiddleTest)
 grade = Button (master, text="Grade School", command=setGrade)
 imp = Button(master, text="Import from Exsisting", command=impSchedual)
 early.grid(row=0, column=0, ipady = 15, ipadx=75)
 grade.grid(row=1, column=0, ipady = 15, ipadx=89)
-imp.grid(row=2, column = 0, ipady = 15, ipadx=68)
+middle.grid(row=2, column=0, ipady = 15, ipadx=89)
+imp.grid(row=3, column = 0, ipady = 15, ipadx=68)
 
 master.mainloop()
 
