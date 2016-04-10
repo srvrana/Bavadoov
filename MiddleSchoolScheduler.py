@@ -198,10 +198,11 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
         #Fill with generated
         currentSchedual = fullSolutionList.pop(0)
 
-        monWed = ["","",""]
-        tueThur = ["","",""]
+        monWed = [[],[],[]]
+        tueThur = [[],[],[]]
 
         col = 0
+        """
         for teacher in currentSchedual:
             for subject in teacher.subjectList:
                 if subject.period ==1:
@@ -216,6 +217,41 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
                     tueThur[1] += str(subject.grade) + ": " + subject.name + "\n\n"
                 elif subject.period ==6:
                     tueThur[2] += str(subject.grade) + ": " + subject.name + "\n\n"
+        """
+        for teacher in currentSchedual:
+            for subject in teacher.subjectList:
+                subject.grade.sort()
+                if subject.period ==1:
+                    monWed[0].append(subject)
+                elif subject.period ==2:
+                    monWed[1].append(subject)
+                elif subject.period ==3:
+                    monWed[2].append(subject)
+                elif subject.period ==4:
+                    tueThur[0].append(subject)
+                elif subject.period ==5:
+                    tueThur[1].append(subject)
+                elif subject.period ==6:
+                    tueThur[2].append(subject)
+
+        for period in monWed:
+            period.sort(key = lambda x:x.grade)
+        for period in tueThur:
+            period.sort(key = lambda x:x.grade)
+
+        for x in range(0,len(monWed)):
+            content = ""
+            for subject in monWed[x]:
+                content += str(subject.grade) +  ": " + subject.name + "\n\n"
+            monWed[x] = content
+
+        for x in range(0,len(tueThur)):
+            content = ""
+            for subject in tueThur[x]:
+                content += str(subject.grade) + ": " + subject.name + "\n\n"
+            tueThur[x] = content
+
+
 
 
         sheet.write(4,1,monWed[0],styleCenter)
