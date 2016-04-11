@@ -1,4 +1,5 @@
 from Tkinter import *
+from MiddleSchoolScheduler import schedule
 from tkMessageBox import *
 import copy
 import tkSimpleDialog
@@ -21,8 +22,15 @@ def setMiddleTest():
 
 	parsedList = parseTeacherList()
 
-	printTeachers(parsedList)
+	"""
+		Temparary fix for class type issue
+	"""
+	for teacher in parsedList:
+		for i in range(0,len(teacher.aval)):
+			teacher.aval[i] = int(teacher.aval[i])
 
+	printTeachers(parsedList)
+	schedule(parsedList, SAVELOCATION, False)
 
 
 def saveLocation():
@@ -118,7 +126,6 @@ def getSubjectList(x):
 		NewSubjectList.append(Subject())
 		NewSubjectList[y].name = Name[y].get()
 		NewSubjectList[y].grade = Grade[y].get()
-		NewSubjectList[y].period = Period[y].get()
 		NewSubjectList[y].mathClass = Math[y]
 
 		slave2.destroy()
@@ -156,9 +163,6 @@ def getSubjectList(x):
 
 		Label(slave2, text ="Grade: ").grid(row=2, column=0)
 		Grade[y].grid(row=2,column=1)
-
-		Label(slave2, text ="Period: ").grid(row=3, column=0)
-		Period[y].grid(row=3,column=1)
 
 		#Checkbutton(slave2, text ="Math: ", command=cb).grid(row=4,  column=0)
 		cb = Checkbutton(slave2, text="Math: ", command=changeChkVal)
@@ -209,13 +213,16 @@ def parseTeacherList():
 
 def printTeachers(passedList):
 	for x in range(0, len(passedList)):
-		print passedList[x].name
-		print passedList[x].aval
-		print passedList[x].homeRoom
+		print passedList[x].__class__
+		print passedList[x].name," : ", passedList[x].name.__class__
+		print passedList[x].aval," : ", passedList[x].aval.__class__
+		print "Period type = ", passedList[x].aval[0].__class__
+		print passedList[x].homeRoom," : ", passedList[x].homeRoom.__class__
 		print
 		for y in range(0, len(passedList[x].subjectList)):
-			print passedList[x].subjectList[y].name
-			print passedList[x].subjectList[y].grade
-			print passedList[x].subjectList[y].period
-			print passedList[x].subjectList[y].mathClass
+			print passedList[x].subjectList[y].name," : ", passedList[x].subjectList[y].name.__class__
+			print passedList[x].subjectList[y].grade," : ",passedList[x].subjectList[y].grade.__class__
+			print "grade type = ", passedList[x].subjectList[y].grade[0].__class__
+			print passedList[x].subjectList[y].period," : ",passedList[x].subjectList[y].period.__class__
+			print passedList[x].subjectList[y].mathClass," : ", passedList[x].subjectList[y].mathClass.__class__
 			print
