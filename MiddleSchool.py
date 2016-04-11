@@ -42,9 +42,10 @@ def getMiddleTeachers():
 	NumTeachers 		= ''
 
 	#Array's of tkinter objects, only way i could find to loop though them with dynamically set number of teachers
-	Name 						= []
-	Grade 					= []
-	Avail 					= []
+	Name 							= []
+	Grade 						= []
+	Avail 						= []
+	NumberOfSubjects 	= []
 
 
 	def addTeacher(x, slave):
@@ -53,8 +54,10 @@ def getMiddleTeachers():
 		NewTeacherList[x].aval = Avail[x].get()
 		NewTeacherList[x].homeRoom = Grade[x].get().upper()
 
+		numOfSubjects = int(NumberOfSubjects[x].get())
+
 		slave.destroy()
-		vari = getSubjectList(x)
+		vari = getSubjectList(x, numOfSubjects)
 
 		NewTeacherList[x].subjectList = vari
 		if len(NewTeacherList) < NumTeachers:
@@ -78,6 +81,10 @@ def getMiddleTeachers():
 		prepop.insert(0, TeacherList[x].aval)
 		Avail.append(prepop)
 
+		prepop = Entry(slave)
+		prepop.insert(0, len(TeacherList[x].subjectList))
+		NumberOfSubjects.append(prepop)
+
 		Label(slave, text ="Teacher " + str(x+1)).grid(row=0, column=0, columnspan=2, pady=5)
 		Label(slave, text ="Name: ").grid(row=1, column=0)
 		Name[x].grid(row=1,column=1)
@@ -88,8 +95,11 @@ def getMiddleTeachers():
 		Label(slave, text ="Availability: ").grid(row=3, column=0)
 		Avail[x].grid(row=3,column=1)
 
+		Label(slave, text ="Number of Subjects: ").grid(row=4, column=0)
+		NumberOfSubjects[x].grid(row=4,column=1)
+
 		sub = Button(slave, text="Submit", command=lambda: addTeacher(x, slave))
-		sub.grid(row=4, column=1)
+		sub.grid(row=5, column=1)
 		
 		slave.mainloop()
 	#promptTeacher()
@@ -106,8 +116,8 @@ def getMiddleTeachers():
 
 
 
-def getSubjectList(x):
-	NumSubjects = ''
+def getSubjectList(x, numOfSubjects):
+	NumSubjects = numOfSubjects
 	NewSubjectList = []
 
 	Name 		= []
@@ -170,8 +180,6 @@ def getSubjectList(x):
 		"""End Sub Command"""
 	"""End Sub Command"""
 
-
-	NumSubjects = tkSimpleDialog.askinteger("NumSubjects", "How Many Subjects?", initialvalue=NumSubjects)
 	while len(TeacherList[x].subjectList) < NumSubjects:
 		TeacherList[x].subjectList.append(Subject())
 
