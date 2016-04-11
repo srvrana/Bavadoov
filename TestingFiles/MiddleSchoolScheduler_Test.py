@@ -29,7 +29,7 @@ for subject in Cooper.subjectList:
 
 Rae = Teacher()
 Rae.name = "Rae"
-Rae.aval = [1,2,3,4]
+Rae.aval = [1,2,3,4,5]
 Rae.homeRoom = "7"
 Rae.subjectList.append(Subject())
 Rae.subjectList[-1].grade =["6A"]
@@ -55,7 +55,7 @@ for subject in Rae.subjectList:
 
 Salazar = Teacher()
 Salazar.name = "Salazar"
-Salazar.aval = [1,2,3,4]
+Salazar.aval = [1,2,3,4,5]
 Salazar.homeRoom = "8A"
 Salazar.subjectList.append(Subject())
 Salazar.subjectList[-1].grade=["6B"]
@@ -81,7 +81,7 @@ for subject in Salazar.subjectList:
 
 Scott = Teacher()
 Scott.name = "Scott"
-Scott.aval = [1,2,3,4]
+Scott.aval = [1,2,3,4,5]
 Scott.homeRoom = "8B"
 Scott.subjectList.append(Subject())
 Scott.subjectList[-1].grade = ["6B"]
@@ -106,6 +106,8 @@ for subject in Scott.subjectList:
 
 teacherList = [Salazar, Cooper, Rae, Scott]
 
+
+
 print "Starting Middle school test script..."
 start = timeit.default_timer()
 
@@ -113,12 +115,12 @@ start = timeit.default_timer()
 # if bool = False uncomment the exit statment below
 
 #True + remove lower exit()  = what we'll use for actual testing script.
-listOfSolutions = schedule(teacherList, "C:\Users\Spencer\Dropbox\Bavadoov\Output\TestingStuff.xls", True)
+listOfSolutions = schedule(teacherList, "C:\Users\Spencer\Dropbox\Bavadoov\Output\TestingStuff.xls", False)
 
 
-#exit()
+exit()
 
-print len(listOfSolutions), " solutions found.\nTesting for conflict..."
+#print len(listOfSolutions), " solutions found.\nTesting for conflict..."
 
 for teacherList in listOfSolutions:
     for i in range(0, len(teacherList)):
