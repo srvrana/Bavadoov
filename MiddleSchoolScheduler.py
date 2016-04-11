@@ -10,16 +10,26 @@ from collections import defaultdict
 def schedule (teacherList, saveLocation, testing):
     mathSetList = solveMath(teacherList)
 
-    fullSolutionList= []
 
-    for mathSolution in mathSetList:
-        tempList = deepcopy(teacherList)
-        for i in range(0, len(tempList)):
-            for j in range(0,len(tempList[i].subjectList)):
-                if tempList[i].subjectList[j].mathClass:
-                    tempList[i].subjectList[j].period = mathSolution.get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
-        solutions = solve(tempList)
-        fullSolutionList += solutions
+    fullSolutionList= []
+    #If math class's were included / scheduled
+    if bool(mathSetList):
+        for mathSolution in mathSetList:
+            tempList = deepcopy(teacherList)
+            for i in range(0, len(tempList)):
+                for j in range(0,len(tempList[i].subjectList)):
+                    if tempList[i].subjectList[j].mathClass:
+                        tempList[i].subjectList[j].period = mathSolution.get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
+            solutions = solve(tempList)
+            fullSolutionList += solutions
+    #Else no math classes, just schedule
+    else:
+        fullSolutionList = solve(teacherList)
+
+
+    if not bool(fullSolutionList):
+        print "Unable to schedule due to unresolvable conflict"
+        exit()
 
     fullSolutionList = sortBySubjectCount (fullSolutionList)
     auditable = scheduleAuditable(teacherList)
@@ -80,7 +90,7 @@ def solve(teacherList):
 
                 for k in range(0, len(teacherList)):
                     for p in range(0, len(teacherList[k].subjectList)):
-                        if any( grade in teacherList[i].subjectList[j].grade for grade in teacherList[k].subjectList[p].grade) and teacherList[i].subjectList[j].name != teacherList[k].subjectList[p].name :
+                        if any( grade[0] in teacherList[i].subjectList[j].grade[0] for grade in teacherList[k].subjectList[p].grade) and teacherList[i].subjectList[j].name != teacherList[k].subjectList[p].name :
                             problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(k)+"].subjectList["+str(p)+"].period"))
 
@@ -202,22 +212,7 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
         tueThur = [[],[],[]]
 
         col = 0
-        """
-        for teacher in currentSchedual:
-            for subject in teacher.subjectList:
-                if subject.period ==1:
-                    monWed[0] += str(subject.grade) + ": " + subject.name + "\n\n"
-                elif subject.period ==2:
-                    monWed[1] += str(subject.grade) + ": " + subject.name + "\n\n"
-                elif subject.period ==3:
-                    monWed[2] += str(subject.grade) + ": " + subject.name + "\n\n"
-                elif subject.period ==4:
-                    tueThur[0] += str(subject.grade) + ": " + subject.name + "\n\n"
-                elif subject.period ==5:
-                    tueThur[1] += str(subject.grade) + ": " + subject.name + "\n\n"
-                elif subject.period ==6:
-                    tueThur[2] += str(subject.grade) + ": " + subject.name + "\n\n"
-        """
+
         for teacher in currentSchedual:
             for subject in teacher.subjectList:
                 subject.grade.sort()
