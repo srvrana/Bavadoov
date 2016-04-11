@@ -10,9 +10,8 @@ from collections import defaultdict
 def schedule (teacherList, saveLocation, testing):
     mathSetList = solveMath(teacherList)
 
-
     fullSolutionList= []
-    #If math class's were included / scheduled
+
     if bool(mathSetList):
         for mathSolution in mathSetList:
             tempList = deepcopy(teacherList)
@@ -22,13 +21,12 @@ def schedule (teacherList, saveLocation, testing):
                         tempList[i].subjectList[j].period = mathSolution.get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
             solutions = solve(tempList)
             fullSolutionList += solutions
-    #Else no math classes, just schedule
     else:
+        print "No math solutions"
         fullSolutionList = solve(teacherList)
 
-
     if not bool(fullSolutionList):
-        print "Unable to schedule due to unresolvable conflict"
+        print "No solutions found"
         exit()
 
     fullSolutionList = sortBySubjectCount (fullSolutionList)
@@ -82,11 +80,10 @@ def solve(teacherList):
                             if not any( grade[0] in teacherList[i].subjectList[l].grade[z][0] for grade in teacherList[i].subjectList[j].grade) and teacherList[i].subjectList[j].name == teacherList[i].subjectList[l].name :
                                 problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
-								break
-							elif teacherList[i].subjectList[j].name != teacherList[i].subjectList[l].name :
-								problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
+                                break
+                        if teacherList[i].subjectList[j].name != teacherList[i].subjectList[l].name:
+                            problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
-								break
 
                 for k in range(0, len(teacherList)):
                     for p in range(0, len(teacherList[k].subjectList)):
@@ -211,7 +208,6 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
         monWed = [[],[],[]]
         tueThur = [[],[],[]]
 
-        col = 0
 
         for teacher in currentSchedual:
             for subject in teacher.subjectList:
