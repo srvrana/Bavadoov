@@ -80,17 +80,17 @@ def solve(teacherList):
                         for z in range(0,len(teacherList[i].subjectList[l].grade)):
                             #If the grade is differnet and name is the same
                             if not any( grade[0] in teacherList[i].subjectList[l].grade[z][0] for grade in teacherList[i].subjectList[j].grade) and teacherList[i].subjectList[j].name == teacherList[i].subjectList[l].name :
-
-
-
                                 problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
-                                break
-
+								break
+							elif teacherList[i].subjectList[j].name != teacherList[i].subjectList[l].name :
+								problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
+                                            ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
+								break
 
                 for k in range(0, len(teacherList)):
                     for p in range(0, len(teacherList[k].subjectList)):
-                        if any( grade[0] in teacherList[i].subjectList[j].grade[0] for grade in teacherList[k].subjectList[p].grade) and teacherList[i].subjectList[j].name != teacherList[k].subjectList[p].name :
+                        if any( grade in teacherList[i].subjectList[j].grade for grade in teacherList[k].subjectList[p].grade) and teacherList[i].subjectList[j].name != teacherList[k].subjectList[p].name :
                             problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(k)+"].subjectList["+str(p)+"].period"))
 
