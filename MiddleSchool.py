@@ -17,17 +17,10 @@ def setMiddleTest():
 	global TeacherList
 
 	ScheduleType = "Middle"
-	#saveLocation()
+	saveLocation()
 	getMiddleTeachers() 	#Set TeacherList with initialized SubjectLists
 
 	parsedList = parseTeacherList()
-
-	"""
-		Temparary fix for class type issue
-	"""
-	for teacher in parsedList:
-		for i in range(0,len(teacher.aval)):
-			teacher.aval[i] = int(teacher.aval[i])
 
 	printTeachers(parsedList)
 	schedule(parsedList, SAVELOCATION, False)
@@ -58,7 +51,7 @@ def getMiddleTeachers():
 		NewTeacherList.append(Teacher())
 		NewTeacherList[x].name = Name[x].get()
 		NewTeacherList[x].aval = Avail[x].get()
-		NewTeacherList[x].homeRoom = Grade[x].get()
+		NewTeacherList[x].homeRoom = Grade[x].get().upper()
 
 		slave.destroy()
 		vari = getSubjectList(x)
@@ -125,7 +118,7 @@ def getSubjectList(x):
 	def addSubject(x, y, slave2):
 		NewSubjectList.append(Subject())
 		NewSubjectList[y].name = Name[y].get()
-		NewSubjectList[y].grade = Grade[y].get()
+		NewSubjectList[y].grade = Grade[y].get().upper()
 		NewSubjectList[y].mathClass = Math[y]
 
 		slave2.destroy()
@@ -192,7 +185,7 @@ def parseTeacherList():
 	#For Each block in the day
 	for x in range(0, len(TeacherList)):
 		parsedTeacherList.append(copy.deepcopy(TeacherList[x])) 
-		parsedTeacherList[x].aval = parsedTeacherList[x].aval.split(',')
+		parsedTeacherList[x].aval = map(int, parsedTeacherList[x].aval.split(','))
 
 		parsedTeacherList[x].subjectList = []
 		for y in range(0, len(TeacherList[x].subjectList)):
