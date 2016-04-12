@@ -1,19 +1,27 @@
 from constraint import *
 from copy import deepcopy
 import xlwt
+import os
 from collections import defaultdict
+from Tkinter import *
+import ttk
+import threading
 
 """
     Main Method To be called
     Takes a True / False bool for testing indication
 """
-def schedule (teacherList, saveLocation, testing):
-    mathSetList = solveMath(teacherList)
 
+
+def schedule (teacherList, saveLocation, testing):
+
+    mathSetList = solveMath(teacherList)
     fullSolutionList= []
 
     if bool(mathSetList):
         for mathSolution in mathSetList:
+            if len(fullSolutionList) > 2000:
+                break
             tempList = deepcopy(teacherList)
             for i in range(0, len(tempList)):
                 for j in range(0,len(tempList[i].subjectList)):
@@ -28,6 +36,8 @@ def schedule (teacherList, saveLocation, testing):
     if not bool(fullSolutionList):
         print "No solutions found"
         exit()
+
+
 
     fullSolutionList = sortBySubjectCount (fullSolutionList)
     auditable = scheduleAuditable(teacherList)
@@ -271,13 +281,15 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
         for i in range(0,5):
             sheetThree.col(i).width = 256*30
 
+        #Save settings to workbook with jacob's code
 
 
         workbook.save(saveLocation)
         print "Saved to " + saveLocation
-        #Save settings to workbook with jacob's code
-        #happy = isUserHappy()
-        happy = True
+        os.system("start "+saveLocation)
+        happy = isUserHappy()
+        #happy = True
+
 
 """
     Fills in everything except class'
@@ -464,3 +476,30 @@ def printRotations(sheet,currentSchedual):
         sheet.write(i,3,mw)
         sheet.write(i,4,tth)
         i += 1
+
+"""
+   Gui for acceptance of schedual
+"""
+def isUserHappy ():
+    
+
+    global root
+    root = Tk()
+    root.columnconfigure(0,weight=1)
+    root.minsize(width=250, height=200)
+    Happy = Button(root, text="Accept Current Schedule",command = happy)
+    Sad = Button(root,text="Close Schedule and Get Another", command = sad)
+    Happy.grid(row=0, column=0, ipady=15,ipadx=19)
+    Sad.grid(row=1,column=0, ipady=15)
+    Label(root,text = "Warning:\n\nYou must close the open schedule before you can generate another!").grid(row=2)
+    Label(root,text = "You may save the current one to another location if necessary").grid(row=3)
+    root.mainloop()
+
+
+def happy():
+    exit()
+
+def sad():
+    root.destroy()
+    return False
+
