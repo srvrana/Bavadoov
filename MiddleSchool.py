@@ -23,9 +23,9 @@ def setMiddleTest(master):
 	parsedList = parseTeacherList()
 
 	printTeachers(parsedList)
-	
-	schedule(parsedList, SAVELOCATION, False)
 	master.destroy()
+	schedule(parsedList, SAVELOCATION, False)
+	
 
 
 def saveLocation():
