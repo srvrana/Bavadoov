@@ -12,7 +12,7 @@ SAVELOCATION = ""
 ScheduleType = ""
 TeacherList = []
 
-def setMiddleTest():
+def setMiddleTest(master):
 	global ScheduleType
 	global TeacherList
 
@@ -23,7 +23,9 @@ def setMiddleTest():
 	parsedList = parseTeacherList()
 
 	printTeachers(parsedList)
+	
 	schedule(parsedList, SAVELOCATION, False)
+	master.destroy()
 
 
 def saveLocation():

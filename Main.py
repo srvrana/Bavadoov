@@ -415,7 +415,7 @@ def impSchedual():
 master = Tk()
 master.minsize(width=250, height=220)
 early = Button (master, text="Early Development", command=setEarly)
-middle = Button (master, text="Middle School", command=setMiddleTest)
+middle = Button (master, text="Middle School", command=lambda: setMiddleTest(master))
 grade = Button (master, text="Grade School", command=setGrade)
 imp = Button(master, text="Import from Exsisting", command=impSchedual)
 early.grid(row=0, column=0, ipady = 15, ipadx=75)
