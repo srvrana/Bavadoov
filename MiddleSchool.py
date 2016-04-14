@@ -197,6 +197,9 @@ def parseTeacherList():
 		parsedTeacherList.append(copy.deepcopy(TeacherList[x])) 
 		parsedTeacherList[x].aval = map(int, parsedTeacherList[x].aval.split(','))
 
+		for i in range(0, len(parsedTeacherList[x].aval)):
+			parsedTeacherList[x].aval.append(int(parsedTeacherList[x].aval[i] + 3))
+
 		parsedTeacherList[x].subjectList = []
 		for y in range(0, len(TeacherList[x].subjectList)):
 			tempList = copy.deepcopy(TeacherList[x].subjectList[y].grade)
