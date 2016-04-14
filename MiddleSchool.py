@@ -207,10 +207,22 @@ def parseTeacherList():
 			#print parsedTeacherList[x].subjectList[y].grade
 			if (not TeacherList[x].subjectList[y].mathClass):
 				for z in range(0, len(tempList)):
-					tempSubject = copy.deepcopy(TeacherList[x].subjectList[y])
-					tempSubject.grade = []
-					tempSubject.grade.append(tempList[z])
-					parsedTeacherList[x].subjectList.append(tempSubject)
+					if '/' in tempList[z]:
+						tempList[z] = tempList[z].split('/')
+						tempSlashList = []
+						for tx in range(0, len(tempList[z])):
+							tempSlashList.append(str(tempList[z][tx]) + str('A'))
+							tempSlashList.append(str(tempList[z][tx]) + str('B'))
+						for ty in range(0, len(tempSlashList)):
+							tempSubject = copy.deepcopy(TeacherList[x].subjectList[y])
+							tempSubject.grade = []
+							tempSubject.grade.append(tempSlashList[ty])
+							parsedTeacherList[x].subjectList.append(tempSubject)
+					else:
+						tempSubject = copy.deepcopy(TeacherList[x].subjectList[y])
+						tempSubject.grade = []
+						tempSubject.grade.append(tempList[z])
+						parsedTeacherList[x].subjectList.append(tempSubject)
 			else:
 				parsedTeacherList[x].subjectList.append(copy.deepcopy(TeacherList[x].subjectList[y]))
 				parsedTeacherList[x].subjectList[y].grade = parsedTeacherList[x].subjectList[y].grade.split(',')
