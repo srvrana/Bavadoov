@@ -497,6 +497,7 @@ def isUserHappy ():
 
 
 def happy():
+    root.destroy()
     exit()
 
 def sad():
