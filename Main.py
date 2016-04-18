@@ -385,7 +385,11 @@ def impSchedual():
 	book = open_workbook(filename)
 	sheet = book.sheet_by_name("User Input")
 	ScheduleType = sheet.cell(0,1).value
-	NumTeachers = int(sheet.cell(1,1).value)
+
+	if (ScheduleType == 'Middle'):
+		importMiddleSchoolSettings(sheet, master)
+
+	'''NumTeachers = int(sheet.cell(1,1).value)
 	BlockCount = int(sheet.cell(2,1).value)
 	LunchBlock = int(sheet.cell(3,1).value)
 	SubCount = int(sheet.cell(4,1).value)
@@ -406,7 +410,7 @@ def impSchedual():
 		Subjects.append(sheet.cell(x+7,4).value)
 
 	saveLocation()
-	getTeachers()
+	getTeachers()'''
 
 """
 	MAIN METHOD STARTS HERE

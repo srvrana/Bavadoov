@@ -1,16 +1,17 @@
 from Tkinter import *
-from MiddleSchoolScheduler import schedule
 from tkMessageBox import *
 import copy
 import tkSimpleDialog
 import tkFileDialog
 from Classes import *
+from MiddleSchoolScheduler import schedule
 import xlwt
 from xlrd import open_workbook
 
 SAVELOCATION = ""
 ScheduleType = ""
 TeacherList = []
+NumTeachers = 0
 
 def setMiddleTest(master):
 	global ScheduleType
@@ -34,14 +35,73 @@ def saveLocation():
 	SAVELOCATION += (tkSimpleDialog.askstring("file", "Name of saved file"))
 	SAVELOCATION += ".xls"
 
+def importMiddleSchoolSettings(sheet, master):
+	global NumTeachers
+	NumTeachers = int(sheet.cell(1,1).value)
+	for x in range(0,NumTeachers):
+		TeacherList.append(Teacher())
+		TeacherList[x].name 		= sheet.cell((x + 4) + (4 * x),1).value
+		TeacherList[x].aval 		= sheet.cell((x + 5) + (4 * x),1).value
+		TeacherList[x].homeRoom = sheet.cell((x + 6) + (4 * x),1).value
+		NumSubjects 						= int(sheet.cell((x + 7) + (4 * x),1).value)
+
+		for y in range(0,NumSubjects):
+			TeacherList[x].subjectList.append(Subject())
+			TeacherList[x].subjectList[y].name = sheet.cell((x + 4) + (4 * x),(4+y)).value
+			TeacherList[x].subjectList[y].grade = sheet.cell((x + 5) + (4 * x),(4+y)).value
+			TeacherList[x].subjectList[y].mathClass = bool(sheet.cell((x + 6) + (4 * x),(4+y)).value)
+
+	setMiddleTest(master)
+
+def saveMiddleSchoolSettings(workbook):
+	dataInput = workbook.add_sheet("User Input", cell_overwrite_ok=True)
+	dataInput.col(0).width = 256*25
+	dataInput.col(1).width = 256*20
+	dataInput.col(3).width = 256*15
+	#FrameWork
+	style = xlwt.easyxf('font:bold 1')
+	dataInput.write(0,0,"Type Of Schedule:", style)
+	dataInput.write(1,0,"Number Of Teachers:", style)
+	dataInput.write(3,0,"Teachers", style)
+	dataInput.write(4,0,"Name:", style)
+	dataInput.write(5,0,"Homeroom:", style)
+	dataInput.write(6,0,"Availability:", style)
+	dataInput.write(7,0,"Number of Subjects:", style)
+
+	dataInput.write(3,3,"Subjects", style)
+	dataInput.write(4,3,"Name:", style)
+	dataInput.write(5,3,"Grade:", style)
+	dataInput.write(6,3,"Math:", style)
+
+	dataInput.write(0,1,ScheduleType)
+	dataInput.write(1,1,len(TeacherList))
+
+	for x in range(0,len(TeacherList)):
+		dataInput.write((x + 4) + (4 * x),1,TeacherList[x].name)
+		dataInput.write((x + 5) + (4 * x),1,TeacherList[x].aval)
+		dataInput.write((x + 6) + (4 * x),1,TeacherList[x].homeRoom)
+		dataInput.write((x + 7) + (4 * x),1,len(TeacherList[x].subjectList))
+
+		for y in range(0,len(TeacherList[x].subjectList)):
+			dataInput.write((x + 4) + (4 * x),(4+y),TeacherList[x].subjectList[y].name)
+			dataInput.write((x + 5) + (4 * x),(4+y),TeacherList[x].subjectList[y].grade)
+			dataInput.write((x + 6) + (4 * x),(4+y),TeacherList[x].subjectList[y].mathClass)
+
+
+
+
+
 """
 	Gets us the Number of teachers and their info
 	Calls Get Blocks
 """
 def getMiddleTeachers():
 	global TeacherList
+	global NumTeachers
 	NewTeacherList 	= []
-	NumTeachers 		= ''
+	
+	if (NumTeachers < 1):
+		NumTeachers = 0
 
 	#Array's of tkinter objects, only way i could find to loop though them with dynamically set number of teachers
 	Name 							= []
@@ -107,11 +167,15 @@ def getMiddleTeachers():
 	#promptTeacher()
 
 	#Get Number of Teachers, stored globaly
-	NumTeachers = tkSimpleDialog.askinteger("NumTeachers", "How Many Teachers?", initialvalue=NumTeachers)
+	while(NumTeachers < 1):
+		NumTeachers = tkSimpleDialog.askinteger("NumTeachers", "How Many Teachers?", initialvalue=NumTeachers)
 
 	#Pad Teachers array for prepopulation where we add teachers
+	t = 0
 	while len(TeacherList) < NumTeachers:
 		TeacherList.append(Teacher())
+		TeacherList[t].aval = ''
+		t = t + 1
 
 	promptTeacher(0)
 	TeacherList = NewTeacherList
@@ -181,9 +245,12 @@ def getSubjectList(x, numOfSubjects):
 		slave2.mainloop()
 		"""End Sub Command"""
 	"""End Sub Command"""
-
+	
+	s = 0
 	while len(TeacherList[x].subjectList) < NumSubjects:
 		TeacherList[x].subjectList.append(Subject())
+		TeacherList[x].subjectList[s].grade = ''
+		s = s + 1
 
 	promptSubject(x, 0)
 	return NewSubjectList

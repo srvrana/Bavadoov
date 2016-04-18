@@ -6,7 +6,7 @@ from collections import defaultdict
 from Tkinter import *
 import ttk
 import threading
-
+import MiddleSchool
 """
     Main Method To be called
     Takes a True / False bool for testing indication
@@ -282,7 +282,7 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
             sheetThree.col(i).width = 256*30
 
         #Save settings to workbook with jacob's code
-
+        MiddleSchool.saveMiddleSchoolSettings(workbook)
 
         workbook.save(saveLocation)
         print "Saved to " + saveLocation
