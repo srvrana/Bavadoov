@@ -11,7 +11,7 @@ from xlrd import open_workbook
 SAVELOCATION = ""
 ScheduleType = ""
 TeacherList = []
-NumTeachers = 0
+OldNumTeachers = 0
 
 def setMiddleTest(master):
 	global ScheduleType
@@ -36,9 +36,9 @@ def saveLocation():
 	SAVELOCATION += ".xls"
 
 def importMiddleSchoolSettings(sheet, master):
-	global NumTeachers
-	NumTeachers = int(sheet.cell(1,1).value)
-	for x in range(0,NumTeachers):
+	global OldNumTeachers
+	OldNumTeachers = int(sheet.cell(1,1).value)
+	for x in range(0,OldNumTeachers):
 		TeacherList.append(Teacher())
 		TeacherList[x].name 		= sheet.cell((x + 4) + (4 * x),1).value
 		TeacherList[x].aval 		= sheet.cell((x + 5) + (4 * x),1).value
@@ -97,11 +97,10 @@ def saveMiddleSchoolSettings(workbook):
 """
 def getMiddleTeachers():
 	global TeacherList
-	global NumTeachers
+	global OldNumTeachers
 	NewTeacherList 	= []
 	
-	if (NumTeachers < 1):
-		NumTeachers = 0
+	NumTeachers = 0
 
 	#Array's of tkinter objects, only way i could find to loop though them with dynamically set number of teachers
 	Name 							= []
@@ -168,10 +167,10 @@ def getMiddleTeachers():
 
 	#Get Number of Teachers, stored globaly
 	while(NumTeachers < 1):
-		NumTeachers = tkSimpleDialog.askinteger("NumTeachers", "How Many Teachers?", initialvalue=NumTeachers)
+		NumTeachers = tkSimpleDialog.askinteger("NumTeachers", "How Many Teachers?", initialvalue=OldNumTeachers)
 
 	#Pad Teachers array for prepopulation where we add teachers
-	t = 0
+	t = len(TeacherList)
 	while len(TeacherList) < NumTeachers:
 		TeacherList.append(Teacher())
 		TeacherList[t].aval = ''
@@ -246,7 +245,7 @@ def getSubjectList(x, numOfSubjects):
 		"""End Sub Command"""
 	"""End Sub Command"""
 	
-	s = 0
+	s = len(TeacherList[x].subjectList)
 	while len(TeacherList[x].subjectList) < NumSubjects:
 		TeacherList[x].subjectList.append(Subject())
 		TeacherList[x].subjectList[s].grade = ''
