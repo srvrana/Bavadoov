@@ -46,16 +46,25 @@ def schedule (teacherList, saveLocation, testing):
                         tempList[i].subjectList[j].period = x.get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
 
                 tempList = compress (tempList)
-                solutionsByMathSet[-1].append(tempList)
+                if len(tempList) > 0:
+                    solutionsByMathSet[-1].append(tempList)
                 if len(solutionsByMathSet) > 35000:
                     break
 
         for subset in solutionsByMathSet:
             subset = sortBySubjectCount(subset)
 
-        for i in range(0,len (solutionsByMathSet)):
+        minSolutionCounter = float("inf")
+        for set in solutionsByMathSet:
+            if len(set) == 0:
+                del(set)
+            elif len(set) < minSolutionCounter:
+                minSolutionCounter = len(set)
+
+        for i in range(0,minSolutionCounter):
             for subset in solutionsByMathSet:
-                fullSolutionList.append(subset[i])
+                if len(subset) >0:
+                    fullSolutionList.append(subset[i])
 
 
     elif not mathCheck:
@@ -92,16 +101,54 @@ def schedule (teacherList, saveLocation, testing):
     Returns list of solutions
 """
 def solveMath(teacherList):
+    """
     problem = Problem()
     for i in range(0, len(teacherList)):
         for j in range(0, len(teacherList[i].subjectList)):
             if teacherList[i].subjectList[j].mathClass:
-                problem.addVariable("TeacherList[" + str(i) +"].subjectList[" + str(j) +"].period", teacherList[i].aval)
-                #This constraint makes sure teacher isn't double booked
+                for k in range (0,len(teacherList[i].subjectList)):
+                    problem.addVariable("TeacherList[" + str(i) +"].subjectList[" + str(k) +"].period", teacherList[i].aval)
+                i += 1
+
+    for i in range(0, len(teacherList)):
+        for j in range(0, len(teacherList[i].subjectList)):
+            if teacherList[i].subjectList[j].mathClass:
                 for l in range(j, len(teacherList[i].subjectList)):
                     if j != l:
                         problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                           ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
+
+    solution = problem.getSolutions()
+    if not bool(solution):
+        return []
+    return solution
+    """
+    containsMathList = []
+    problem = Problem()
+    #add all math classes
+    for i in range(0, len(teacherList)):
+        for j in range(0, len(teacherList[i].subjectList)):
+            if teacherList[i].subjectList[j].mathClass:
+                problem.addVariable("TeacherList[" + str(i) +"].subjectList[" + str(j) +"].period", teacherList[i].aval)
+
+    #For teachers that have math classes, they can't be dual booked.
+    for i in range(0, len(teacherList)):
+        for j in range(0,len(teacherList[i].subjectList)):
+            for k in range(j,len(teacherList[i].subjectList)):
+                if j != k and teacherList[i].subjectList[j].mathClass and teacherList[i].subjectList[k].mathClass:
+                    problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
+                                    ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(k)+"].period"))
+
+    #For math classes, grades can't be double booked. list[i].[j] list[l].[m]
+    for i in range(0, len(teacherList)):
+        for j in range(0, len(teacherList[i].subjectList)):
+            if teacherList[i].subjectList[j].mathClass:
+                for l in range(i+1, len(teacherList)):
+                    for m in range(0, len(teacherList[l].subjectList)):
+                        if teacherList[l].subjectList[m].mathClass:
+                            if any( grade in teacherList[i].subjectList[j].grade for grade in teacherList[l].subjectList[m].grade):
+                                problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
+                                            ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(l)+"].subjectList["+str(m)+"].period"))
 
     solution = problem.getSolutions()
     if not bool(solution):
@@ -120,7 +167,7 @@ def solve(teacherList):
                 problem.addVariable("TeacherList[" + str(i) +"].subjectList[" + str(j) +"].period", [teacherList[i].subjectList[j].period])
             else:
                 problem.addVariable("TeacherList[" + str(i) +"].subjectList[" + str(j) +"].period", teacherList[i].aval)
-                for l in range(j, len(teacherList[i].subjectList)):
+                for l in range(0, len(teacherList[i].subjectList)):
                     if j != l:
                         for z in range(0,len(teacherList[i].subjectList[l].grade)):
                             #If the grade is differnet and name is the same
@@ -128,9 +175,11 @@ def solve(teacherList):
                                 problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
                                 break
+                        #print teacherList[i].subjectList[j].name, " !=",  teacherList[i].subjectList[l].name
                         if teacherList[i].subjectList[j].name != teacherList[i].subjectList[l].name:
                             problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
+
 
                 for k in range(0, len(teacherList)):
                     for p in range(0, len(teacherList[k].subjectList)):
@@ -144,19 +193,7 @@ def solve(teacherList):
     if not bool(solutions):
         return []
     return solutions
-    """
-    finalList= []
-    for x in range(0,len(solutions)):
-        tempList = deepcopy(teacherList)
-        for i in range(0, len(teacherList)):
-            for j in range(0, len(tempList[i].subjectList)):
-                tempList[i].subjectList[j].period = solutions[x].get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
 
-        tempList = compress (tempList)
-        finalList.append(tempList)
-
-    return finalList
-    """
 
 """
     Returns compressed list
