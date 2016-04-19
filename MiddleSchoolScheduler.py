@@ -4,37 +4,75 @@ import xlwt
 import os
 from collections import defaultdict
 from Tkinter import *
-import ttk
-import threading
+import tkMessageBox
 import MiddleSchool
+
 """
     Main Method To be called
     Takes a True / False bool for testing indication
 """
-
-
 def schedule (teacherList, saveLocation, testing):
 
-    mathSetList = solveMath(teacherList)
+    solutionsByMathSet = []
+
+    mathCheck = False
+    mathSetList = False
+    for teacher in teacherList:
+        for subject in teacher.subjectList:
+            if subject.mathClass:
+                mathCheck = True
+                break
+
+    if not mathCheck:
+        tkMessageBox.showinfo("Information", "No math classes detected.\nOK to continue")
+    else:
+        mathSetList = solveMath(teacherList)
     fullSolutionList= []
 
     if bool(mathSetList):
         for mathSolution in mathSetList:
-            if len(fullSolutionList) > 2000:
-                break
+            solutionsByMathSet.append([])
+
             tempList = deepcopy(teacherList)
             for i in range(0, len(tempList)):
                 for j in range(0,len(tempList[i].subjectList)):
                     if tempList[i].subjectList[j].mathClass:
                         tempList[i].subjectList[j].period = mathSolution.get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
-            solutions = solve(tempList)
-            fullSolutionList += solutions
-    else:
-        print "No math solutions"
-        fullSolutionList = solve(teacherList)
+            solutionItter = solve(tempList)
+            for x in solutionItter:
+                tempList = deepcopy(teacherList)
+                for i in range(0, len(teacherList)):
+                    for j in range(0, len(tempList[i].subjectList)):
+                        tempList[i].subjectList[j].period = x.get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
+
+                tempList = compress (tempList)
+                solutionsByMathSet[-1].append(tempList)
+                if len(solutionsByMathSet) > 35000:
+                    break
+
+        for subset in solutionsByMathSet:
+            subset = sortBySubjectCount(subset)
+
+        for i in range(0,len (solutionsByMathSet)):
+            for subset in solutionsByMathSet:
+                fullSolutionList.append(subset[i])
+
+
+    elif not mathCheck:
+        solutionItter = solve(teacherList)
+        for x in solutionItter:
+            tempList = deepcopy(teacherList)
+            for i in range(0, len(teacherList)):
+                for j in range(0, len(tempList[i].subjectList)):
+                    tempList[i].subjectList[j].period = x.get("TeacherList[" + str(i) + "].subjectList[" + str(j) + "].period")
+
+            tempList = compress (tempList)
+            fullSolutionList.append(tempList)
+            if len(fullSolutionList) > 20000:
+                break
 
     if not bool(fullSolutionList):
-        print "No solutions found"
+        tkMessageBox.showinfo("Error", "No solutions were able to be found.")
         exit()
 
 
@@ -43,8 +81,7 @@ def schedule (teacherList, saveLocation, testing):
     auditable = scheduleAuditable(teacherList)
     homerooms = schedualHomeroom(teacherList)
 
-
-    #To support testing
+   #To support testing
     if testing:
         return fullSolutionList
 
@@ -101,10 +138,13 @@ def solve(teacherList):
                             problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                             ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(k)+"].subjectList["+str(p)+"].period"))
 
-    solutions = problem.getSolutions()
+
+
+    solutions = problem.getSolutionIter()
     if not bool(solutions):
         return []
-
+    return solutions
+    """
     finalList= []
     for x in range(0,len(solutions)):
         tempList = deepcopy(teacherList)
@@ -116,6 +156,7 @@ def solve(teacherList):
         finalList.append(tempList)
 
     return finalList
+    """
 
 """
     Returns compressed list
@@ -282,8 +323,8 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
             sheetThree.col(i).width = 256*30
 
         #Save settings to workbook with jacob's code
-        MiddleSchool.saveMiddleSchoolSettings(workbook)
 
+        MiddleSchool.saveMiddleSchoolSettings(workbook)
         workbook.save(saveLocation)
         print "Saved to " + saveLocation
         os.system("start "+saveLocation)
