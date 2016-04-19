@@ -4,7 +4,11 @@ import copy
 import tkSimpleDialog
 import tkFileDialog
 from Classes import *
-from MiddleSchoolScheduler import schedule
+#This is put into a try / catch due to the fact that when running the test scrips, this class is never created.
+try:
+	from MiddleSchoolScheduler import schedule
+except ImportError:
+	pass
 import xlwt
 from xlrd import open_workbook
 
