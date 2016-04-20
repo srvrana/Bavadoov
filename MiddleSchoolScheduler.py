@@ -53,7 +53,7 @@ def schedule (teacherList, saveLocation, testing):
                 totalsize = 0
                 for solutions in solutionsByMathSet:
                     totalsize += len(solutions)
-                if totalsize >5000:
+                if totalsize >20000:
                     break
 
         for subset in solutionsByMathSet:
@@ -61,7 +61,6 @@ def schedule (teacherList, saveLocation, testing):
             if len(subset) >0:
                 fullSolutionList.append(subset[0])
         fullSolutionList = sortBySubjectCount(fullSolutionList)
-
     elif not mathCheck:
         solutionItter = solve(teacherList)
         for x in solutionItter:
