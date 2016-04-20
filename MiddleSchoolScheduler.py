@@ -58,8 +58,10 @@ def schedule (teacherList, saveLocation, testing):
 
         for subset in solutionsByMathSet:
             subset = sortBySubjectCount(subset)
-            if len(subset) >0:
-                fullSolutionList.append(subset[0])
+        for i in range(0,1000):
+            for subset in solutionsByMathSet:
+                if i < len(subset):
+                    fullSolutionList.append(subset[i])
 
     elif not mathCheck:
         solutionItter = solve(teacherList)
@@ -102,7 +104,6 @@ def solveMath(teacherList):
                 for k in range (0,len(teacherList[i].subjectList)):
                     problem.addVariable("TeacherList[" + str(i) +"].subjectList[" + str(k) +"].period", teacherList[i].aval)
                 i += 1
-
     for i in range(0, len(teacherList)):
         for j in range(0, len(teacherList[i].subjectList)):
             if teacherList[i].subjectList[j].mathClass:
@@ -110,7 +111,6 @@ def solveMath(teacherList):
                     if j != l:
                         problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
                                           ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
-
     solution = problem.getSolutions()
     if not bool(solution):
         return []
@@ -552,7 +552,7 @@ def printRotations(sheet,currentSchedual):
    Gui for acceptance of schedual
 """
 def isUserHappy ():
-    
+
 
     global root
     root = Tk()
@@ -574,4 +574,3 @@ def happy():
 def sad():
     root.destroy()
     return False
-
