@@ -48,24 +48,19 @@ def schedule (teacherList, saveLocation, testing):
                 tempList = compress (tempList)
                 if len(tempList) > 0:
                     solutionsByMathSet[-1].append(tempList)
-                if len(solutionsByMathSet) > 35000:
+                if len(solutionsByMathSet[-1]) > 1000:
+                    break
+                totalsize = 0
+                for solutions in solutionsByMathSet:
+                    totalsize += len(solutions)
+                if totalsize >5000:
                     break
 
         for subset in solutionsByMathSet:
             subset = sortBySubjectCount(subset)
-
-        minSolutionCounter = float("inf")
-        for set in solutionsByMathSet:
-            if len(set) == 0:
-                del(set)
-            elif len(set) < minSolutionCounter:
-                minSolutionCounter = len(set)
-
-        for i in range(0,minSolutionCounter):
-            for subset in solutionsByMathSet:
-                if len(subset) >0:
-                    fullSolutionList.append(subset[i])
-
+            if len(subset) >0:
+                fullSolutionList.append(subset[0])
+        fullSolutionList = sortBySubjectCount(fullSolutionList)
 
     elif not mathCheck:
         solutionItter = solve(teacherList)
