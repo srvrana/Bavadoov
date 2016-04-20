@@ -60,7 +60,7 @@ def schedule (teacherList, saveLocation, testing):
             subset = sortBySubjectCount(subset)
             if len(subset) >0:
                 fullSolutionList.append(subset[0])
-        fullSolutionList = sortBySubjectCount(fullSolutionList)
+
     elif not mathCheck:
         solutionItter = solve(teacherList)
         for x in solutionItter:
@@ -73,14 +73,13 @@ def schedule (teacherList, saveLocation, testing):
             fullSolutionList.append(tempList)
             if len(fullSolutionList) > 20000:
                 break
+        fullSolutionList = sortBySubjectCount (fullSolutionList)
+
 
     if not bool(fullSolutionList):
         tkMessageBox.showinfo("Error", "No solutions were able to be found.")
         exit()
 
-
-
-    fullSolutionList = sortBySubjectCount (fullSolutionList)
     auditable = scheduleAuditable(teacherList)
     homerooms = schedualHomeroom(teacherList)
 
