@@ -113,27 +113,37 @@ def getMiddleTeachers():
 	NumberOfSubjects 	= []
 
 
-	def addTeacher(x, slave):
-		NewTeacherList.append(Teacher())
-		NewTeacherList[x].name = Name[x].get()
-		NewTeacherList[x].aval = Avail[x].get()
-		NewTeacherList[x].homeRoom = Grade[x].get().upper()
-
-		numOfSubjects = int(NumberOfSubjects[x].get())
-
+	def addTeacher(slave):
+		for x in range(0,len(TeacherList)):
+			NewTeacherList.append(Teacher())
+			NewTeacherList[x].name = Name[x].get()
+			NewTeacherList[x].aval = Avail[x].get()
+			NewTeacherList[x].homeRoom = Grade[x].get().upper()
+			
+			numOfSubjects = int(NumberOfSubjects[x].get())
+			vari = getSubjectList(x, numOfSubjects, NewTeacherList[x].name)
+			NewTeacherList[x].subjectList = vari
+			
 		slave.destroy()
-		vari = getSubjectList(x, numOfSubjects)
-
-		NewTeacherList[x].subjectList = vari
-		if len(NewTeacherList) < NumTeachers:
-			promptTeacher(x+1)
-
 		slave.quit()
 	#End addTeacher()
 
-	def promptTeacher(x):
-		slave = Tk()
+	#promptTeacher()
 
+	#Get Number of Teachers, stored globaly
+	while(NumTeachers < 1):
+		NumTeachers = tkSimpleDialog.askinteger("NumTeachers", "How Many Teachers?", initialvalue=OldNumTeachers)
+
+	#Pad Teachers array for prepopulation where we add teachers
+	t = len(TeacherList)
+	while len(TeacherList) < NumTeachers:
+		TeacherList.append(Teacher())
+		TeacherList[t].aval = ''
+		t = t + 1
+
+	slave = Tk()
+
+	for x in range(0,NumTeachers):
 		prepop = Entry(slave)
 		prepop.insert(0, TeacherList[x].name)
 		Name.append(prepop)
@@ -150,42 +160,30 @@ def getMiddleTeachers():
 		prepop.insert(0, len(TeacherList[x].subjectList))
 		NumberOfSubjects.append(prepop)
 
-		Label(slave, text ="Teacher " + str(x+1)).grid(row=0, column=0, columnspan=2, pady=5)
-		Label(slave, text ="Name: ").grid(row=1, column=0)
-		Name[x].grid(row=1,column=1)
+		Label(slave, text ="Teacher " + str(x+1)).grid(row=x*6, column=0, columnspan=2, pady=5)
 
-		Label(slave, text ="Homeroom: ").grid(row=2, column=0)
-		Grade[x].grid(row=2,column=1)
+		Label(slave, text ="Name: ").grid(row=x*6+1, column=0)
+		Name[x].grid(row=x*6+1,column=1)
 
-		Label(slave, text ="Availability: ").grid(row=3, column=0)
-		Avail[x].grid(row=3,column=1)
+		Label(slave, text ="Homeroom: ").grid(row=x*6+2, column=0)
+		Grade[x].grid(row=x*6+2,column=1)
 
-		Label(slave, text ="Number of Subjects: ").grid(row=4, column=0)
-		NumberOfSubjects[x].grid(row=4,column=1)
+		Label(slave, text ="Availability: ").grid(row=x*6+3, column=0)
+		Avail[x].grid(row=x*6+3,column=1)
 
-		sub = Button(slave, text="Submit", command=lambda: addTeacher(x, slave))
-		sub.grid(row=5, column=1)
-		
-		slave.mainloop()
-	#promptTeacher()
+		Label(slave, text ="Number of Subjects: ").grid(row=x*6+4, column=0)
+		NumberOfSubjects[x].grid(row=x*6+4,column=1)
 
-	#Get Number of Teachers, stored globaly
-	while(NumTeachers < 1):
-		NumTeachers = tkSimpleDialog.askinteger("NumTeachers", "How Many Teachers?", initialvalue=OldNumTeachers)
+	sub = Button(slave, text="Submit", command=lambda: addTeacher(slave))
+	sub.grid(row=NumTeachers*10, column=1)
+	
+	slave.mainloop()
 
-	#Pad Teachers array for prepopulation where we add teachers
-	t = len(TeacherList)
-	while len(TeacherList) < NumTeachers:
-		TeacherList.append(Teacher())
-		TeacherList[t].aval = ''
-		t = t + 1
-
-	promptTeacher(0)
 	TeacherList = NewTeacherList
 
 
 
-def getSubjectList(x, numOfSubjects):
+def getSubjectList(x, numOfSubjects, teacherName):
 	NumSubjects = numOfSubjects
 	NewSubjectList = []
 
@@ -194,26 +192,31 @@ def getSubjectList(x, numOfSubjects):
 	Period 	= []
 	Math 		= []
 
-	def addSubject(x, y, slave2):
-		NewSubjectList.append(Subject())
-		NewSubjectList[y].name = Name[y].get()
-		NewSubjectList[y].grade = Grade[y].get().upper()
-		NewSubjectList[y].mathClass = Math[y]
+	def addSubject(slave2):
+		for y in range(0,NumSubjects):
+			NewSubjectList.append(Subject())
+			NewSubjectList[y].name = Name[y].get()
+			NewSubjectList[y].grade = Grade[y].get().upper()
+			NewSubjectList[y].mathClass = Math[y]
 
 		slave2.destroy()
-
-		if len(NewSubjectList) < NumSubjects:
-			promptSubject(x, y+1)
-		
 		slave2.quit()
 	"""End Sub Command"""
 
-	def promptSubject(x, y):
-		def changeChkVal():
-				Math[y] = not Math[y]
+	
+	s = len(TeacherList[x].subjectList)
+	while len(TeacherList[x].subjectList) < NumSubjects:
+		TeacherList[x].subjectList.append(Subject())
+		TeacherList[x].subjectList[s].grade = ''
+		s = s + 1
 
-		slave2 = Tk()
 
+	def changeChkVal():
+			Math[y] = not Math[y]
+
+	slave2 = Tk()
+
+	for y in range(0,NumSubjects):
 		prepop = Entry(slave2)
 		prepop.insert(0, TeacherList[x].subjectList[y].name)
 		Name.append(prepop)
@@ -229,33 +232,24 @@ def getSubjectList(x, numOfSubjects):
 		Math.append(bool)
 		Math[y] = TeacherList[x].subjectList[y].mathClass or False
 
-		Label(slave2, text ="Subject " + str(y+1)).grid(row=0, column=0, columnspan=2, pady=5)
-		Label(slave2, text ="Name: ").grid(row=1, column=0)
-		Name[y].grid(row=1,column=1)
+		Label(slave2, text = teacherName + ": Subject " + str(y+1)).grid(row=y*6, column=0, columnspan=2, pady=5)
+		Label(slave2, text ="Name: ").grid(row=y*6+1, column=0)
+		Name[y].grid(row=y*6+1,column=1)
 
-		Label(slave2, text ="Grade: ").grid(row=2, column=0)
-		Grade[y].grid(row=2,column=1)
+		Label(slave2, text ="Grade: ").grid(row=y*6+2, column=0)
+		Grade[y].grid(row=y*6+2,column=1)
 
 		#Checkbutton(slave2, text ="Math: ", command=cb).grid(row=4,  column=0)
-		cb = Checkbutton(slave2, text="Math: ", command=changeChkVal)
+		cb = Checkbutton(slave2, text="Math", command=changeChkVal)
 		if Math[y]:
 			cb.select()
-		cb.grid(row=4,  column=0)
+		cb.grid(row=y*6+3,  column=0)
 
-		sub = Button(slave2, text="Submit", command=lambda: addSubject(x, y, slave2))
-		sub.grid(row=5, column=1)
-		
-		slave2.mainloop()
-		"""End Sub Command"""
-	"""End Sub Command"""
+	sub = Button(slave2, text="Submit", command=lambda: addSubject(slave2))
+	sub.grid(row=NumSubjects*10, column=0)
 	
-	s = len(TeacherList[x].subjectList)
-	while len(TeacherList[x].subjectList) < NumSubjects:
-		TeacherList[x].subjectList.append(Subject())
-		TeacherList[x].subjectList[s].grade = ''
-		s = s + 1
+	slave2.mainloop()
 
-	promptSubject(x, 0)
 	return NewSubjectList
 
 
