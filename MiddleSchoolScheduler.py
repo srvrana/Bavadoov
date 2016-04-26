@@ -7,11 +7,16 @@ from Tkinter import *
 import tkMessageBox
 import MiddleSchool
 
-"""
-    Main Method To be called
-    Takes a True / False bool for testing indication
-"""
+
 def schedule (teacherList, saveLocation, testing):
+    """
+    Begins the Schedualing Processs
+
+    :param teacherList: A list of all teacher objects
+    :param saveLocation: File location in which to save .xls file
+    :param testing: Boolean to indicate if we are running a test script, if so we do not save the file.
+    :return: Returns the solution list only if testing == true
+    """
 
     solutionsByMathSet = []
 
@@ -23,7 +28,7 @@ def schedule (teacherList, saveLocation, testing):
                 mathCheck = True
                 break
 
-    if not mathCheck:
+    if not mathCheck and not testing:
         tkMessageBox.showinfo("Information", "No math classes detected.\nOK to continue")
     else:
         mathSetList = solveMath(teacherList)
@@ -78,7 +83,7 @@ def schedule (teacherList, saveLocation, testing):
         fullSolutionList = sortBySubjectCount (fullSolutionList)
 
 
-    if not bool(fullSolutionList):
+    if not bool(fullSolutionList) and not testing:
         tkMessageBox.showinfo("Error", "No solutions were able to be found.")
         exit()
 
@@ -89,34 +94,17 @@ def schedule (teacherList, saveLocation, testing):
     if testing:
         return fullSolutionList
 
-    #Else
     printingMethod(fullSolutionList,auditable,homerooms, saveLocation)
 
-"""
-    Returns list of solutions
-"""
+
 def solveMath(teacherList):
     """
-    problem = Problem()
-    for i in range(0, len(teacherList)):
-        for j in range(0, len(teacherList[i].subjectList)):
-            if teacherList[i].subjectList[j].mathClass:
-                for k in range (0,len(teacherList[i].subjectList)):
-                    problem.addVariable("TeacherList[" + str(i) +"].subjectList[" + str(k) +"].period", teacherList[i].aval)
-                i += 1
-    for i in range(0, len(teacherList)):
-        for j in range(0, len(teacherList[i].subjectList)):
-            if teacherList[i].subjectList[j].mathClass:
-                for l in range(j, len(teacherList[i].subjectList)):
-                    if j != l:
-                        problem.addConstraint(lambda currentSubject, currentTeachersList: currentSubject != currentTeachersList,
-                                          ("TeacherList["+str(i)+"].subjectList["+str(j)+"].period", "TeacherList["+str(i)+"].subjectList["+str(l)+"].period"))
-    solution = problem.getSolutions()
-    if not bool(solution):
-        return []
-    return solution
+    Solves the teacher list only scheduling math classes
+
+    :param teacherList: List of Teacher objects to schedule
+    :return: list of solutions, in which only math has been assigned
     """
-    containsMathList = []
+
     problem = Problem()
     #add all math classes
     for i in range(0, len(teacherList)):
@@ -148,10 +136,14 @@ def solveMath(teacherList):
         return []
     return solution
 
-"""
-    Returns list of solutions
-"""
+
 def solve(teacherList):
+    """
+    Solves an entire schedule problem
+
+    :param teacherList: List of teachers to be scheduled
+    :return: A Solution iterator which we can iterate though.
+    """
     problem = Problem()
     for i in range(0, len(teacherList)):
         for j in range(0, len(teacherList[i].subjectList)):
@@ -188,10 +180,13 @@ def solve(teacherList):
     return solutions
 
 
-"""
-    Returns compressed list
-"""
 def compress (teacherList):
+    """
+    Compresses the teacherlist, such that any classes with the same name, grade, and period are made into 1
+
+    :param teacherList: List of teachers
+    :return: compressed List
+    """
     for i in range(0,len(teacherList)):
         for j in range(0, len(teacherList[i].subjectList)):
 
@@ -207,10 +202,14 @@ def compress (teacherList):
 
     return teacherList
 
-"""
-    Returns list sorted so that first entry has the most free space
-"""
+
 def sortBySubjectCount(solutionList):
+    """
+    Sorts a list of solutions, such that the solution with the least amount of subjects is first
+
+    :param solutionList: list of solutions
+    :return: sorted list of solutions.
+    """
 
     for solution in solutionList:
         count = 0
@@ -225,10 +224,14 @@ def sortBySubjectCount(solutionList):
 
     return solutionList
 
-"""
-    Returns homeroom list for scheudal output
-"""
+
 def schedualHomeroom(teacherList):
+    """
+    Extracts homeroom info into a list
+
+    :param teacherList: List of teachers
+    :return: List of teacher - homeroom pairs
+    """
     class homeroom:
         def __init__(self,grade,name):
             self.grade = grade
@@ -240,17 +243,22 @@ def schedualHomeroom(teacherList):
     tempList.sort(key=lambda x: x.grade[0])
     return tempList
 
-"""
-    Returns schedual for audiable stuff
-"""
+
 def scheduleAuditable (teacherList):
+    """
+    Assigned before / after school and lunch dutys as evenly as posable
+
+    :param teacherList: list of teachers
+    :return: List of assignments
+    """
     class teach:
-        def __init__(self,name):
+        def __init__(self,name, aval):
             self.name = name
             self.count = 0
+            self.aval = aval
     names = []
     for teacher in teacherList:
-        names.append(teach(teacher.name))
+        names.append(teach(teacher.name, teacher.aval))
 
     assignments =[[0]*6 for i in range(3)]
 
@@ -262,12 +270,20 @@ def scheduleAuditable (teacherList):
                 names[0].count +=2
             else:
                 names[0].count +=1
+            names.reverse()
     return assignments
 
-"""
-    Prints schedules to an excel file
-"""
+
 def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
+    """
+    Begins the printing process
+
+    :param fullSolutionList:  full set of solutions
+    :param auditable: list of before / after school and lunch assignments
+    :param homerooms: list of teacher - homeroom pairs
+    :param saveLocation: - location to save .xls file
+    :return: returns nothing
+    """
 
     happy = False
     styleBold = xlwt.easyxf("font: bold 1")
@@ -362,10 +378,15 @@ def printingMethod(fullSolutionList,auditable,homerooms, saveLocation):
         #happy = True
 
 
-"""
-    Fills in everything except class'
-"""
 def fillDefault (sheet,auditable,homerooms ):
+    """
+    Creates the template for the schedual, filling everything except class assignments
+
+    :param sheet: xls sheet being written to
+    :param auditable: list of before / after school and lunch assignments
+    :param homerooms: list of homeroom - teacher assignments
+
+    """
     styleBold = xlwt.easyxf("font: bold 1; alignment: horizontal center")
     styleBold.alignment.wrap = 1
     styleCenter = xlwt.easyxf("alignment: horizontal center")
@@ -421,10 +442,17 @@ def fillDefault (sheet,auditable,homerooms ):
         content = "Study Hall: " + auditable[i%2][4] + "\n" +"Project Room: ", auditable[i%2][5]
         sheet.write(11,i,content,styleCenter)
 
-"""
-    prints sheet for friday schedule
-"""
+
 def printFriday(sheet, currentSchedual,auditable, homerooms):
+    """
+    Prints the friday shcedual onto pass sheet
+
+    :param sheet: xls sheet which is written to
+    :param currentSchedual: this weeks schedle
+    :param auditable: list of before / after school and lunch assignments
+    :param homerooms: list of homeroom - teacher pairs
+    :return: reutrns nothing
+    """
     styleBold = xlwt.easyxf("font: bold 1; alignment: horizontal center")
     styleBold.alignment.wrap = 1
     styleCenter = xlwt.easyxf("alignment: horizontal center")
@@ -488,10 +516,14 @@ def printFriday(sheet, currentSchedual,auditable, homerooms):
     content = "Study Hall: " + auditable[-1][4] + "\nGuided Study: " + auditable[-1][5]
     sheet.write(13,1,content,styleBold)
 
-"""
-    Generates quartery rotation, returns as dictionary
-"""
+
 def generateRotation (currentSchedual):
+    """
+    Generates the quarterly roation
+
+    :param currentSchedual: current schedule
+    :return: Rotation map
+    """
     gradeList = defaultdict(list)
     for teacher in currentSchedual:
         for subject in teacher.subjectList:
@@ -508,10 +540,15 @@ def generateRotation (currentSchedual):
         gradeList[key] = tempList
     return gradeList
 
-"""
-    prints sheet for Quarterly rotations
-"""
+
 def printRotations(sheet,currentSchedual):
+    """
+    Prints the rotation schedule
+
+    :param sheet: xls sheet being written to
+    :param currentSchedual: map of the rotations
+    :return: nothing
+    """
     styleBold = xlwt.easyxf("font: bold 1")
     allowNewLine = xlwt.XFStyle()
     allowNewLine.alignment.wrap = 1
@@ -528,7 +565,6 @@ def printRotations(sheet,currentSchedual):
     for key in keys:
         sheet.write(i,0,key,styleBold)
         if i < 5:
-            #Boy i'm lazy
             sheet.write(0,i,"Quarter: " + str(i),styleBold)
 
         classList = gradeList[key]
@@ -548,10 +584,13 @@ def printRotations(sheet,currentSchedual):
         sheet.write(i,4,tth)
         i += 1
 
-"""
-   Gui for acceptance of schedual
-"""
+
 def isUserHappy ():
+    """
+    Gui to ask if the use has accepted the generated schedule
+
+    :return: nothing
+    """
 
 
     global root
@@ -568,9 +607,18 @@ def isUserHappy ():
 
 
 def happy():
+    """
+    kills all gui windows and quits
+
+    :return:
+    """
     root.destroy()
     exit()
 
 def sad():
+    """
+    kills gui window and start process over.
+    :return:
+    """
     root.destroy()
     return False
