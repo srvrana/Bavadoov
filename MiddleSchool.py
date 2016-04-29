@@ -143,6 +143,14 @@ def getMiddleTeachers():
 
 	slave = Tk()
 
+	def checkForm():
+		try:
+			if((int)(NumberOfSubjects[x].get()) > 0):
+				addTeacher(slave)
+		except:
+			pass
+		
+
 	for x in range(0,NumTeachers):
 		prepop = Entry(slave)
 		prepop.insert(0, TeacherList[x].name)
@@ -174,7 +182,7 @@ def getMiddleTeachers():
 		Label(slave, text ="Number of Subjects: ").grid(row=x*6+4, column=0)
 		NumberOfSubjects[x].grid(row=x*6+4,column=1)
 
-	sub = Button(slave, text="Submit", command=lambda: addTeacher(slave))
+	sub = Button(slave, text="Submit", command=lambda: checkForm())
 	sub.grid(row=NumTeachers*10, column=1)
 	
 	slave.mainloop()
