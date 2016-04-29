@@ -232,7 +232,7 @@ def getSubjectList(x, numOfSubjects, teacherName):
 		Math.append(bool)
 		Math[y] = TeacherList[x].subjectList[y].mathClass or False
 
-		Label(slave2, text = teacherName + "Subject " + str(y+1)).grid(row=y*6, column=0, columnspan=2, pady=5)
+		Label(slave2, text = teacherName + ": Subject " + str(y+1)).grid(row=y*6, column=0, columnspan=2, pady=5)
 		Label(slave2, text ="Name: ").grid(row=y*6+1, column=0)
 		Name[y].grid(row=y*6+1,column=1)
 
@@ -268,7 +268,16 @@ def parseTeacherList():
 			#print parsedTeacherList[x].subjectList[y].grade
 			if (not TeacherList[x].subjectList[y].mathClass):
 				for z in range(0, len(tempList)):
-					if '/' in tempList[z]:
+					if (len(tempList[z]) == 1):
+						tempSingleList = []
+						tempSingleList.append(str(tempList[z]) + str('A'))
+						tempSingleList.append(str(tempList[z]) + str('B'))
+						for tx in range(0, len(tempSingleList)):
+							tempSubject = copy.deepcopy(TeacherList[x].subjectList[y])
+							tempSubject.grade = []
+							tempSubject.grade.append(tempSingleList[tx])
+							parsedTeacherList[x].subjectList.append(tempSubject)
+					elif '/' in tempList[z]:
 						tempList[z] = tempList[z].split('/')
 						tempSlashList = []
 						for tx in range(0, len(tempList[z])):
