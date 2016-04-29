@@ -232,7 +232,7 @@ def getSubjectList(x, numOfSubjects, teacherName):
 		Math.append(bool)
 		Math[y] = TeacherList[x].subjectList[y].mathClass or False
 
-		Label(slave2, text = teacherName + ": Subject " + str(y+1)).grid(row=y*6, column=0, columnspan=2, pady=5)
+		Label(slave2, text = teacherName + "Subject " + str(y+1)).grid(row=y*6, column=0, columnspan=2, pady=5)
 		Label(slave2, text ="Name: ").grid(row=y*6+1, column=0)
 		Name[y].grid(row=y*6+1,column=1)
 
@@ -260,9 +260,6 @@ def parseTeacherList():
 	for x in range(0, len(TeacherList)):
 		parsedTeacherList.append(copy.deepcopy(TeacherList[x])) 
 		parsedTeacherList[x].aval = map(int, parsedTeacherList[x].aval.split(','))
-
-		for i in range(0, len(parsedTeacherList[x].aval)):
-			parsedTeacherList[x].aval.append(int(parsedTeacherList[x].aval[i] + 3))
 
 		parsedTeacherList[x].subjectList = []
 		for y in range(0, len(TeacherList[x].subjectList)):

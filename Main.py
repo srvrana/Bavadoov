@@ -424,7 +424,7 @@ grade = Button (master, text="Grade School", command=setGrade)
 imp = Button(master, text="Import from Exsisting", command=impSchedual)
 early.grid(row=0, column=0, ipady = 15, ipadx=75)
 grade.grid(row=1, column=0, ipady = 15, ipadx=89)
-middle.grid(row=2, column=0, ipady = 15, ipadx=89)
+middle.grid(row=2, column=0, ipady = 15, ipadx=86)
 imp.grid(row=3, column = 0, ipady = 15, ipadx=68)
 
 master.mainloop()
