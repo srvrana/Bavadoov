@@ -18,6 +18,12 @@ TeacherList = []
 OldNumTeachers = 0
 
 def setMiddleTest(master):
+	"""
+	Controller for the Middle School GUI
+
+	:param master: An instance of the tkinter structure used to close the program post-schedule
+	:return: N/A
+	"""
 	global ScheduleType
 	global TeacherList
 
@@ -34,14 +40,27 @@ def setMiddleTest(master):
 
 
 def saveLocation():
+	"""
+	Prompts for the store location for the output file
+
+	:return: N/A
+	"""
 	global SAVELOCATION
 	SAVELOCATION = str(tkFileDialog.askdirectory()) + "/"
 	SAVELOCATION += (tkSimpleDialog.askstring("file", "Name of saved file"))
 	SAVELOCATION += ".xls"
 
 def importMiddleSchoolSettings(sheet, master):
+	"""
+	Wrapper function to prepopulate data arrays with input from an xls sheet
+
+	:param sheet: An xls sheet to read saved settings from
+	:param master: An instance of the tkinter structure to be passed to the controller function
+	:return: N/A
+	"""
 	global OldNumTeachers
 	OldNumTeachers = int(sheet.cell(1,1).value)
+
 	for x in range(0,OldNumTeachers):
 		TeacherList.append(Teacher())
 		TeacherList[x].name 		= sheet.cell((x + 4) + (4 * x),1).value
@@ -58,6 +77,12 @@ def importMiddleSchoolSettings(sheet, master):
 	setMiddleTest(master)
 
 def saveMiddleSchoolSettings(workbook):
+	"""
+	Function called by scheduler to write input to be later used to prepopulate the data arrays for the program
+
+	:param workbook: An xls workbook passed to have a new sheet created to store user input
+	:return: N/A
+	"""
 	dataInput = workbook.add_sheet("User Input", cell_overwrite_ok=True)
 	dataInput.col(0).width = 256*25
 	dataInput.col(1).width = 256*20
@@ -92,18 +117,17 @@ def saveMiddleSchoolSettings(workbook):
 			dataInput.write((x + 6) + (4 * x),(4+y),TeacherList[x].subjectList[y].mathClass)
 
 
-
-
-
-"""
-	Gets us the Number of teachers and their info
-	Calls Get Blocks
-"""
 def getMiddleTeachers():
+	"""
+	Prompts user for teacher count, then opens an entry window for teacher data input. I
+
+	:return: N/A
+	"""
+
 	global TeacherList
 	global OldNumTeachers
 	NewTeacherList 	= []
-	
+
 	NumTeachers = 0
 
 	#Array's of tkinter objects, only way i could find to loop though them with dynamically set number of teachers
@@ -114,19 +138,26 @@ def getMiddleTeachers():
 
 
 	def addTeacher(slave):
+		"""
+		Calls function to add subject data for teacher instance. Will add the teacher instance to the new data array
+
+		:param slave: Tkinter instance to be destroyed after subject selection
+		:return: N/A
+		"""
+
 		for x in range(0,len(TeacherList)):
 			NewTeacherList.append(Teacher())
 			NewTeacherList[x].name = Name[x].get()
 			NewTeacherList[x].aval = Avail[x].get()
 			NewTeacherList[x].homeRoom = Grade[x].get().upper()
-			
+
 			numOfSubjects = int(NumberOfSubjects[x].get())
 			vari = getSubjectList(x, numOfSubjects, NewTeacherList[x].name)
 			NewTeacherList[x].subjectList = vari
-			
+
 		slave.destroy()
 		slave.quit()
-	#End addTeacher()
+		#End addTeacher()
 
 	#promptTeacher()
 
@@ -144,6 +175,11 @@ def getMiddleTeachers():
 	slave = Tk()
 
 	def checkForm():
+		"""
+		Validates that essential data fields have input before launching the addTeacher() method
+
+		:return: N/A
+		"""
 		try:
 			if((int)(NumberOfSubjects[x].get()) > 0):
 				addTeacher(slave)
@@ -184,7 +220,7 @@ def getMiddleTeachers():
 
 	sub = Button(slave, text="Submit", command=lambda: checkForm())
 	sub.grid(row=NumTeachers*10, column=1)
-	
+
 	slave.mainloop()
 
 	TeacherList = NewTeacherList
@@ -192,6 +228,14 @@ def getMiddleTeachers():
 
 
 def getSubjectList(x, numOfSubjects, teacherName):
+	"""
+	Prompts user for teacher count, then opens an entry window for teacher data input. I
+
+	:param x: Our current position in the teacher array
+	:param numOfSubjects: The number of subjects selected to be added for the teacher instance
+	:param teacherName: Name of the new teacher instance
+	:return: Subject list to be appended to the teacher object
+	"""
 	NumSubjects = numOfSubjects
 	NewSubjectList = []
 
@@ -201,6 +245,12 @@ def getSubjectList(x, numOfSubjects, teacherName):
 	Math 		= []
 
 	def addSubject(slave2):
+		"""
+		Adds subject data to subjectList, destroys our tkinter instance to exit the mainloop
+
+		:param slave2: Tkinter instance to be destroyed after subject addition
+		:return: N/A
+		"""
 		for y in range(0,NumSubjects):
 			NewSubjectList.append(Subject())
 			NewSubjectList[y].name = Name[y].get()
@@ -209,9 +259,8 @@ def getSubjectList(x, numOfSubjects, teacherName):
 
 		slave2.destroy()
 		slave2.quit()
-	"""End Sub Command"""
 
-	
+
 	s = len(TeacherList[x].subjectList)
 	while len(TeacherList[x].subjectList) < NumSubjects:
 		TeacherList[x].subjectList.append(Subject())
@@ -220,7 +269,12 @@ def getSubjectList(x, numOfSubjects, teacherName):
 
 
 	def changeChkVal():
-			Math[y] = not Math[y]
+		"""
+		Changes value of math checkbox
+
+		:return: N/A
+		"""
+		Math[y] = not Math[y]
 
 	slave2 = Tk()
 
@@ -255,13 +309,18 @@ def getSubjectList(x, numOfSubjects, teacherName):
 
 	sub = Button(slave2, text="Submit", command=lambda: addSubject(slave2))
 	sub.grid(row=NumSubjects*10, column=0)
-	
+
 	slave2.mainloop()
 
 	return NewSubjectList
 
 
 def parseTeacherList():
+	"""
+	Parses our newTeacherList, normalizing data and adjusting the subjectList based on buisness requirements
+
+	:return: The new teacher list to be passed to the scheduling algorithm
+	"""
 	global TeacherList
 	parsedTeacherList = []
 	#For Each block in the day
@@ -271,43 +330,48 @@ def parseTeacherList():
 
 		parsedTeacherList[x].subjectList = []
 		for y in range(0, len(TeacherList[x].subjectList)):
-			tempList = copy.deepcopy(TeacherList[x].subjectList[y].grade)
-			tempList = tempList.split(',')
-			#print parsedTeacherList[x].subjectList[y].grade
-			if (not TeacherList[x].subjectList[y].mathClass):
-				for z in range(0, len(tempList)):
-					if (len(tempList[z]) == 1):
-						tempSingleList = []
-						tempSingleList.append(str(tempList[z]) + str('A'))
-						tempSingleList.append(str(tempList[z]) + str('B'))
-						for tx in range(0, len(tempSingleList)):
-							tempSubject = copy.deepcopy(TeacherList[x].subjectList[y])
-							tempSubject.grade = []
-							tempSubject.grade.append(tempSingleList[tx])
-							parsedTeacherList[x].subjectList.append(tempSubject)
-					elif '/' in tempList[z]:
-						tempList[z] = tempList[z].split('/')
+			tempGradeString = copy.deepcopy(TeacherList[x].subjectList[y].grade)
+			finalGradeList = []
+
+			if (len(tempGradeString) == 1):	
+				finalGradeList.append(str(tempGradeString) + str('A'))
+				finalGradeList.append(str(tempGradeString) + str('B'))
+			else:
+				tempGradeList = []
+				tempGradeList = tempGradeString.split(',')
+
+				for z in range(0, len(tempGradeList)):
+					if (len(tempGradeList[z]) == 1):	
+						finalGradeList.append(str(tempGradeList[z]) + str('A'))
+						finalGradeList.append(str(tempGradeList[z]) + str('B'))
+					elif ('/' in tempGradeList[z]):
 						tempSlashList = []
-						for tx in range(0, len(tempList[z])):
-							tempSlashList.append(str(tempList[z][tx]) + str('A'))
-							tempSlashList.append(str(tempList[z][tx]) + str('B'))
-						for ty in range(0, len(tempSlashList)):
-							tempSubject = copy.deepcopy(TeacherList[x].subjectList[y])
-							tempSubject.grade = []
-							tempSubject.grade.append(tempSlashList[ty])
-							parsedTeacherList[x].subjectList.append(tempSubject)
-					else:
-						tempSubject = copy.deepcopy(TeacherList[x].subjectList[y])
-						tempSubject.grade = []
-						tempSubject.grade.append(tempList[z])
-						parsedTeacherList[x].subjectList.append(tempSubject)
+						tempSlashList = copy.deepcopy(tempGradeList[z]).split('/')
+						for tx in range(0, len(tempSlashList)):
+							finalGradeList.append(str(tempSlashList[tx]) + str('A'))
+							finalGradeList.append(str(tempSlashList[tx]) + str('B'))
+					else: 
+						finalGradeList.append(str(tempGradeList[z]))
+
+			if (not TeacherList[x].subjectList[y].mathClass):
+				for ty in range(0, len(finalGradeList)):
+					tempSubject = copy.deepcopy(TeacherList[x].subjectList[y])
+					tempSubject.grade = []
+					tempSubject.grade.append(finalGradeList[ty])
+					parsedTeacherList[x].subjectList.append(tempSubject)
 			else:
 				parsedTeacherList[x].subjectList.append(copy.deepcopy(TeacherList[x].subjectList[y]))
-				parsedTeacherList[x].subjectList[y].grade = parsedTeacherList[x].subjectList[y].grade.split(',')
+				parsedTeacherList[x].subjectList[y].grade = finalGradeList
 
 	return parsedTeacherList
 
 def printTeachers(passedList):
+	"""
+	Prints every element in the passed teacher list, as well as the data type
+
+	:param passedList: The teacherList array to be printed
+	:return: N/A
+	"""
 	for x in range(0, len(passedList)):
 		print passedList[x].__class__
 		print passedList[x].name," : ", passedList[x].name.__class__
