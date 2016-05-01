@@ -1,10 +1,12 @@
 class Block:
-	time = ""
-	part = []
+    def __init__(self):
+	    self.time = ""
+	    self.part = []
 
 class Day:
-	doW = ""
-	subject = ""
+    def __init__(self):
+	    self.doW = ""
+	    self.subject = ""
 
 class Subject:
     def __init__(self):
