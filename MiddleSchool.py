@@ -243,6 +243,7 @@ def getSubjectList(x, numOfSubjects, teacherName):
 	Grade 	= []
 	Period 	= []
 	Math 		= []
+	checkboxList = []
 
 	def addSubject(slave2):
 		"""
@@ -255,7 +256,7 @@ def getSubjectList(x, numOfSubjects, teacherName):
 			NewSubjectList.append(Subject())
 			NewSubjectList[y].name = Name[y].get()
 			NewSubjectList[y].grade = Grade[y].get().upper()
-			NewSubjectList[y].mathClass = Math[y]
+			NewSubjectList[y].mathClass = Math[y].get()
 
 		slave2.destroy()
 		slave2.quit()
@@ -268,15 +269,7 @@ def getSubjectList(x, numOfSubjects, teacherName):
 		s = s + 1
 
 
-	def changeChkVal():
-		"""
-		Changes value of math checkbox
-
-		:return: N/A
-		"""
-		Math[y] = not Math[y]
-
-	slave2 = Tk()
+	slave2 = Toplevel()
 
 	for y in range(0,NumSubjects):
 		prepop = Entry(slave2)
@@ -291,8 +284,17 @@ def getSubjectList(x, numOfSubjects, teacherName):
 		prepop.insert(0, TeacherList[x].subjectList[y].period)
 		Period.append(prepop)
 
-		Math.append(bool)
-		Math[y] = TeacherList[x].subjectList[y].mathClass or False
+		#Math.append(bool)
+		#Math[y] = TeacherList[x].subjectList[y].mathClass or False
+
+		#val = BooleanVar()
+		Math.append(BooleanVar())
+		val = TeacherList[x].subjectList[y].mathClass or False
+		Math[y].set(val)
+
+		newCheckbox = Checkbutton(slave2, variable=Math[y],text="Math")
+
+		checkboxList.append(newCheckbox)
 
 		Label(slave2, text = teacherName + ": Subject " + str(y+1)).grid(row=y*6, column=0, columnspan=2, pady=5)
 		Label(slave2, text ="Name: ").grid(row=y*6+1, column=0)
@@ -302,10 +304,9 @@ def getSubjectList(x, numOfSubjects, teacherName):
 		Grade[y].grid(row=y*6+2,column=1)
 
 		#Checkbutton(slave2, text ="Math: ", command=cb).grid(row=4,  column=0)
-		cb = Checkbutton(slave2, text="Math", command=changeChkVal)
-		if Math[y]:
-			cb.select()
-		cb.grid(row=y*6+3,  column=0)
+		#if val:
+		#	checkboxList[y].select()
+		checkboxList[y].grid(row=y*6+3,  column=0)
 
 	sub = Button(slave2, text="Submit", command=lambda: addSubject(slave2))
 	sub.grid(row=NumSubjects*10, column=0)
