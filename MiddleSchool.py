@@ -342,6 +342,7 @@ def parseTeacherList():
 				tempGradeList = tempGradeString.split(',')
 
 				for z in range(0, len(tempGradeList)):
+					tempGradeList[z] = tempGradeList[z].strip()
 					if (len(tempGradeList[z]) == 1):	
 						finalGradeList.append(str(tempGradeList[z]) + str('A'))
 						finalGradeList.append(str(tempGradeList[z]) + str('B'))
